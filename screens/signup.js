@@ -404,7 +404,7 @@ export default function SignUp({ navigation }) {
         </View>
 
         {/* Role Picker */}
-        <View style={styles.pickerContainer}>
+        {/* <View style={styles.pickerContainer}>
           <Picker
             selectedValue={role}
             onValueChange={(itemValue) => setRole(itemValue)}
@@ -417,7 +417,7 @@ export default function SignUp({ navigation }) {
             <Picker.Item label="Home Owner" value="homeowner" color="#000" />
             <Picker.Item label="Admin" value="admin" color="#000" />
           </Picker>
-        </View>
+        </View> */}
 
         <TouchableOpacity style={styles.signInButton} onPress={onRegister}>
           <Text style={styles.signInButtonText}>Register</Text>
@@ -492,19 +492,19 @@ const styles = StyleSheet.create({
     right: 15,
     top: 12,
   },
-  pickerContainer: {
-    backgroundColor: "#014d33",
-    borderRadius: 6,
-    marginBottom: 15,
-    overflow: "hidden",
-  },
-  picker: {
-    color: "#fff",
-    fontSize: 16,
-    paddingVertical: Platform.OS === "android" ? 10 : 12,
-    paddingHorizontal: 15,
-    backgroundColor: "#014d33",
-  },
+  // pickerContainer: {
+  //   backgroundColor: "#014d33",
+  //   borderRadius: 6,
+  //   marginBottom: 15,
+  //   overflow: "hidden",
+  // },
+  // picker: {
+  //   color: "#fff",
+  //   fontSize: 16,
+  //   paddingVertical: Platform.OS === "android" ? 10 : 12,
+  //   paddingHorizontal: 15,
+  //   backgroundColor: "#014d33",
+  // },
   signInButton: {
     backgroundColor: GREEN,
     borderRadius: 6,

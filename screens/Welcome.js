@@ -7,7 +7,7 @@ const WelcomeScreen = () => {
 
   return (
     <ImageBackground
-      source={require('../assets/logo.png')} // Replace with your actual image path
+      source={require('../assets/background.png')} // Replace with your actual image path
       style={styles.background}
       resizeMode="cover"
     >
@@ -16,7 +16,15 @@ const WelcomeScreen = () => {
           Hello, Welcome to Scrap Connect where we connect homeowners with scrap collectors for fast and easy scrap collection.
         </Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonText}>Get Started As A HomeOwner</Text>
+        </TouchableOpacity>
+
+         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ALogin')}>
+          <Text style={styles.buttonText}>Get Started As An Admin</Text>
+        </TouchableOpacity>
+
+         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Clogin')}>
+          <Text style={styles.buttonText}>Get Started As A Collector</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>

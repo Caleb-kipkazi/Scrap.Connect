@@ -2,10 +2,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function Rewards() {
+export default function Feedback() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Welcome to the Reward Screen</Text>
+      <Text style={styles.text}>Feedback</Text>
     </View>
   );
 }
@@ -23,4 +23,3 @@ const styles = StyleSheet.create({
     color: 'green',
   },
 });
-

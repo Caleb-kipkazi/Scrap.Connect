@@ -8,8 +8,12 @@ import LoginScreen from './screens/login'; // You’ll create this later
 import signupScreen from './screens/signup';
 import ResetpasswordScreen from './screens/Resetpassword';
 import MainNavigator from './navigation/mainNavigator'; // Adjust path if needed
-
-
+import AdminLogin from './screens/Alogin';
+import CollectorLogin from './screens/Clogin';
+import AdminSignUp from './screens/Asignup';
+import CollectorSignUp from './screens/Csignup';
+import AdminResetPassword from './screens/AResetpassword';
+import CollectorResetPassword from './screens/CResetpassword';
 // import CollectorDashboard from './screens/CollectorDashboard';
 // import HomeownerDashboard from './screens/HomeownerDashboard';
 
@@ -25,6 +29,13 @@ export default function App() {
         <Stack.Screen name="SignUp" component={signupScreen} />
         <Stack.Screen name="ResetPassword" component={ResetpasswordScreen} /> 
         <Stack.Screen name="mainNavigator" component={MainNavigator} />
+        <Stack.Screen name="ALogin" component={AdminLogin}/>
+        <Stack.Screen name="Asignup" component={AdminSignUp}/>
+        <Stack.Screen name="AResetpassword" component={AdminResetPassword}/>
+        <Stack.Screen name="Clogin" component={CollectorLogin}/>
+        <Stack.Screen name="Csignup" component={CollectorSignUp}/>
+        <Stack.Screen name="CResetpassword" component={CollectorResetPassword}/>
+        
         {/* <Stack.Screen name="HomeownerDashboard" component={HomeownerDashboard} /> */}
 
         

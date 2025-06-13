@@ -173,61 +173,198 @@
 // });
 
 
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+// import React, { useState } from 'react';
+// import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// import { NavigationContainer } from '@react-navigation/native';
+// import { Ionicons, MaterialIcons, FontAwesome5, Entypo } from '@expo/vector-icons';
+
+// // Screens
+// import Home from './Home';
+// import Request from './Request';
+// import History from './History';
+// import Messaging from './Messaging';
+// import AboutUs from './AboutUs';
+// import ContactUs from './ContactUs';
+// import FAQs from './FAQs';
+// import Rewards from './Rewards';
+
+// const Tab = createBottomTabNavigator();
+
+// export default function HomeownerDashboard() {
+//   const [activeSidebar, setActiveSidebar] = useState(null);
+
+//   // const renderSidebarScreen = () => {
+//   //   switch (activeSidebar) {
+//   //     case 'AboutUs': return <AboutUs />;
+//   //     case 'ContactUs': return <ContactUs />;
+//   //     case 'FAQs': return <FAQs />;
+//   //     case 'Rewards': return <Rewards />;
+//       // default: return (
+//         <Tab.Navigator
+//           initialRouteName="Home"
+//           screenOptions={({ route }) => ({
+//             tabBarIcon: ({ color, size }) => {
+//               let iconName;
+//               switch (route.name) {
+//                 case 'Home': iconName = 'home'; break;
+//                 case 'Request': iconName = 'send'; break;
+//                 case 'History': iconName = 'time'; break;
+//                 case 'Messaging': iconName = 'chatbubble'; break;
+//               }
+//               return <Ionicons name={iconName} size={size} color={color} />;
+//             },
+//             tabBarActiveTintColor: 'green',
+//             tabBarInactiveTintColor: 'gray',
+//             headerShown: false,
+//           })}
+//         >
+//           <Tab.Screen name="Home" component={Home} />
+//           <Tab.Screen name="Request" component={Request} />
+//           <Tab.Screen name="History" component={History} />
+//           <Tab.Screen name="Messaging" component={Messaging} />
+//         </Tab.Navigator>
+//       // );
+//     }
+//   // };
+
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       {/* Top Bar */}
+//       <View style={styles.topBar}>
+//         <View>
+//           <Text style={styles.heading}>Welcome Homeowner.</Text>
+//           <Text style={styles.subheading}>Scrap Connect</Text>
+//           <Text style={styles.tagline}>Connect.Collect</Text>
+//         </View>
+//         <View style={styles.topRightIcons}>
+//           <TouchableOpacity style={styles.iconButton}>
+//             <Ionicons name="notifications" size={24} color="green" />
+//           </TouchableOpacity>
+//           <TouchableOpacity style={styles.iconButton}>
+//             <Ionicons name="person" size={24} color="green" />
+//           </TouchableOpacity>
+//         </View>
+//       </View>
+
+//       {/* Body */}
+//       <View style={styles.body}>
+//         {/* Sidebar */}
+//         {/* <View style={styles.sidebar}>
+//           <ScrollView>
+//             <SidebarItem
+//               icon="info"
+//               label="About Us"
+//               onPress={() => setActiveSidebar('AboutUs')}
+//             />
+//             <SidebarItem
+//               icon="phone"
+//               label="Contact Us"
+//               onPress={() => setActiveSidebar('ContactUs')}
+//             />
+//             <SidebarItem
+//               icon="help"
+//               label="FAQs"
+//               onPress={() => setActiveSidebar('FAQs')}
+//             />
+//             <SidebarItem
+//               icon="star"
+//               label="Rewards"
+//               onPress={() => setActiveSidebar('Rewards')}
+//             />
+//           </ScrollView>
+//         </View> */}
+
+//         {/* Main content area (Tabs or Sidebar content) */}
+//         <View style={styles.mainContent}>
+//           {/* <NavigationContainer independent={true}>
+//             {renderSidebarScreen()} */}
+//           {/* </NavigationContainer> */}
+//         </View>
+//       </View>
+//     </SafeAreaView>
+//   );
+// // }
+
+// // Sidebar Item Component
+// // const SidebarItem = ({ icon, label, onPress }) => (
+// //   <TouchableOpacity style={styles.sidebarItem} onPress={onPress}>
+// //     <Ionicons name={icon} size={20} color="white" style={{ marginRight: 8 }} />
+// //     <Text style={styles.sidebarText}>{label}</Text>
+// //   </TouchableOpacity>
+// // );
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: 'white',
+//   },
+//   topBar: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     padding: 16,
+//     backgroundColor: 'white',
+//   },
+//   heading: {
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//     color: 'green',
+//   },
+//   subheading: {
+//     fontSize: 16,
+//     color: 'black',
+//   },
+//   tagline: {
+//     fontSize: 14,
+//     color: 'gray',
+//   },
+//   topRightIcons: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+//   iconButton: {
+//     marginLeft: 12,
+//   },
+//   body: {
+//     flex: 1,
+//     flexDirection: 'row',
+//   },
+//   // sidebar: {
+//   //   width: 120,
+//   //   backgroundColor: '#228B22',
+//   //   paddingVertical: 20,
+//   // },
+//   // sidebarItem: {
+//   //   flexDirection: 'row',
+//   //   alignItems: 'center',
+//   //   paddingVertical: 12,
+//   //   paddingHorizontal: 10,
+//   // },
+//   // sidebarText: {
+//   //   color: 'white',
+//   //   fontSize: 14,
+//   // },
+//   // mainContent: {
+//     // flex: 1,
+//   // },
+// });
+
+
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { Ionicons, MaterialIcons, FontAwesome5, Entypo } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 // Screens
 import Home from './Home';
 import Request from './Request';
 import History from './History';
 import Messaging from './Messaging';
-import AboutUs from './AboutUs';
-import ContactUs from './ContactUs';
-import FAQs from './FAQs';
-import Rewards from './Rewards';
 
 const Tab = createBottomTabNavigator();
 
 export default function HomeownerDashboard() {
-  const [activeSidebar, setActiveSidebar] = useState(null);
-
-  const renderSidebarScreen = () => {
-    switch (activeSidebar) {
-      case 'AboutUs': return <AboutUs />;
-      case 'ContactUs': return <ContactUs />;
-      case 'FAQs': return <FAQs />;
-      case 'Rewards': return <Rewards />;
-      default: return (
-        <Tab.Navigator
-          initialRouteName="Home"
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-              let iconName;
-              switch (route.name) {
-                case 'Home': iconName = 'home'; break;
-                case 'Request': iconName = 'send'; break;
-                case 'History': iconName = 'time'; break;
-                case 'Messaging': iconName = 'chatbubble'; break;
-              }
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: 'green',
-            tabBarInactiveTintColor: 'gray',
-            headerShown: false,
-          })}
-        >
-          <Tab.Screen name="Home" component={Home} />
-          <Tab.Screen name="Request" component={Request} />
-          <Tab.Screen name="History" component={History} />
-          <Tab.Screen name="Messaging" component={Messaging} />
-        </Tab.Navigator>
-      );
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Top Bar */}
@@ -247,52 +384,37 @@ export default function HomeownerDashboard() {
         </View>
       </View>
 
-      {/* Body */}
-      <View style={styles.body}>
-        {/* Sidebar */}
-        <View style={styles.sidebar}>
-          <ScrollView>
-            <SidebarItem
-              icon="info"
-              label="About Us"
-              onPress={() => setActiveSidebar('AboutUs')}
-            />
-            <SidebarItem
-              icon="phone"
-              label="Contact Us"
-              onPress={() => setActiveSidebar('ContactUs')}
-            />
-            <SidebarItem
-              icon="help"
-              label="FAQs"
-              onPress={() => setActiveSidebar('FAQs')}
-            />
-            <SidebarItem
-              icon="star"
-              label="Rewards"
-              onPress={() => setActiveSidebar('Rewards')}
-            />
-          </ScrollView>
-        </View>
-
-        {/* Main content area (Tabs or Sidebar content) */}
-        <View style={styles.mainContent}>
-          {/* <NavigationContainer independent={true}> */}
-            {renderSidebarScreen()}
-          {/* </NavigationContainer> */}
-        </View>
+      {/* Main content: Tab Navigation */}
+      <View style={styles.mainContent}>
+        {/* <NavigationContainer independent={true}> */}
+          <Tab.Navigator
+            initialRouteName="Home"
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ color, size }) => {
+                let iconName;
+                switch (route.name) {
+                  case 'Home': iconName = 'home'; break;
+                  case 'Request': iconName = 'send'; break;
+                  case 'History': iconName = 'time'; break;
+                  case 'Messaging': iconName = 'chatbubble'; break;
+                }
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+              tabBarActiveTintColor: 'green',
+              tabBarInactiveTintColor: 'gray',
+              headerShown: false,
+            })}
+          >
+            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="Request" component={Request} />
+            <Tab.Screen name="History" component={History} />
+            <Tab.Screen name="Messaging" component={Messaging} />
+          </Tab.Navigator>
+        {/* </NavigationContainer> */}
       </View>
     </SafeAreaView>
   );
 }
-
-// Sidebar Item Component
-const SidebarItem = ({ icon, label, onPress }) => (
-  <TouchableOpacity style={styles.sidebarItem} onPress={onPress}>
-    <Ionicons name={icon} size={20} color="white" style={{ marginRight: 8 }} />
-    <Text style={styles.sidebarText}>{label}</Text>
-  </TouchableOpacity>
-);
 
 const styles = StyleSheet.create({
   container: {
@@ -324,25 +446,6 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     marginLeft: 12,
-  },
-  body: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  sidebar: {
-    width: 120,
-    backgroundColor: '#228B22',
-    paddingVertical: 20,
-  },
-  sidebarItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-  },
-  sidebarText: {
-    color: 'white',
-    fontSize: 14,
   },
   mainContent: {
     flex: 1,

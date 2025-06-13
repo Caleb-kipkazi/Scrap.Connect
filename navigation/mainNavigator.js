@@ -6,12 +6,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
 import HomeownerDashboard from '../screens/HomeownerDashboard';
-import Request from '../screens/Request';
+// import Request from '../screens/Request';
 import Profile from '../screens/Profile';
 import FAQs from '../screens/FAQs';
 import AboutUs from '../screens/AboutUs';
 import ContactUs from '../screens/ContactUs';
-import History from '../screens/History';
+// import History from '../screens/History';
+import Rewards from '../screens/Rewards';
+import Feedback from '../screens/Feedback';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -20,13 +22,13 @@ function DashboardStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="HomeownerDashboard" component={HomeownerDashboard} options={{ headerShown: false }} />
-      <Stack.Screen name="Request" component={Request} />
+      <Stack.Screen name="Feedback" component={Feedback} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="FAQs" component={FAQs} />
       <Stack.Screen name="AboutUs" component={AboutUs} />
       <Stack.Screen name="ContactUs" component={ContactUs} />
-      <Stack.Screen name="History" component={History} />
-
+      {/* <Stack.Screen name="History" component={History} /> */}
+      <Stack.Screen name="Rewards" component={Rewards}/>
     </Stack.Navigator>
   );
 }
@@ -47,11 +49,11 @@ export default function MainNavigator() {
         }}
       />
       <Drawer.Screen
-        name="Request"
-        component={Request}
+        name="Feedback"
+        component={Feedback}
         options={{
-          drawerIcon: ({ color, size }) => <Ionicons name="clipboard-outline" size={size} color={color} />,
-        }}
+          drawerIcon: ({ color, size }) => <Ionicons name="chatbox-ellipses" size={size} color={color} />,
+                 }}
       />
       <Drawer.Screen
         name="Profile"
@@ -82,12 +84,19 @@ export default function MainNavigator() {
         }}
       />
       <Drawer.Screen
+        name="Rewards"
+        component={Rewards}
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="star" size={size} color={color} />,
+        }}
+      />
+      {/* <Drawer.Screen
         name="History"
         component={History}
         options={{
           drawerIcon: ({ color, size }) => <Ionicons name="time-outline" size={size} color={color} />,
         }}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 }
