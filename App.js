@@ -14,6 +14,7 @@ import AdminSignUp from './screens/Asignup';
 import CollectorSignUp from './screens/Csignup';
 import AdminResetPassword from './screens/AResetpassword';
 import CollectorResetPassword from './screens/CResetpassword';
+import AmainNavigator from './navigation/AmainNavigator';
 // import CollectorDashboard from './screens/CollectorDashboard';
 // import HomeownerDashboard from './screens/HomeownerDashboard';
 
@@ -29,6 +30,7 @@ export default function App() {
         <Stack.Screen name="SignUp" component={signupScreen} />
         <Stack.Screen name="ResetPassword" component={ResetpasswordScreen} /> 
         <Stack.Screen name="mainNavigator" component={MainNavigator} />
+        <Stack.Screen name="AmainNavigator" component={AmainNavigator}/>
         <Stack.Screen name="ALogin" component={AdminLogin}/>
         <Stack.Screen name="Asignup" component={AdminSignUp}/>
         <Stack.Screen name="AResetpassword" component={AdminResetPassword}/>

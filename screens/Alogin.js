@@ -80,7 +80,7 @@ export default function AdminLogin({ navigation }) {
 
           <TouchableOpacity
     style={styles.signInButton}
-    onPress={() => navigation.navigate("mainNavigator")} // Navigate to mainNavigator after login
+    onPress={() => navigation.navigate("AmainNavigator")} // Navigate to mainNavigator after login
   >
     <Text style={styles.signInButtonText}>Sign In</Text>
   </TouchableOpacity>
