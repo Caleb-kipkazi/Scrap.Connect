@@ -10,7 +10,7 @@ const app=express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-// app.use('/api/v1',router);
+app.use('/api/v1',router);
 
 //connect to db
 const connectDB=async()=>{
