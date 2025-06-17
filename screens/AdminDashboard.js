@@ -36,12 +36,12 @@ export default function AdminDashboard() {
       <View style={styles.mainContent}>
         {/* <NavigationContainer independent={true}> */}
           <Tab.Navigator
-            initialRouteName="Trequests"
+            initialRouteName="Requests"
             screenOptions={({ route }) => ({
               tabBarIcon: ({ color, size }) => {
                 let iconName;
                 switch (route.name) {
-                  case 'Trequests': iconName = 'list'; break;
+                  case 'Requests': iconName = 'list'; break;
                   case 'Assign': iconName = 'send'; break;
                   case 'Ahistory': iconName = 'time'; break;
                   case 'Reports': iconName = 'bar-chart'; break;
