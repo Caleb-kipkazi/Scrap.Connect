@@ -444,13 +444,15 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 const RequestScreen = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [location, setLocation] = useState('');
   const [pickupDate, setPickupDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [pickupTime, setPickupTime] = useState('');
+const [showTimePicker, setShowTimePicker] = useState(false);
   const [scrapType, setScrapType] = useState('');
   const [details, setDetails] = useState('');
   const [weight, setWeight] = useState('');
@@ -459,7 +461,16 @@ const RequestScreen = () => {
   const [selectedCenter, setSelectedCenter] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
 
+
   useEffect(() => {
+    // Simulate user data from login token
+  const mockUser = {
+    fullName: 'John Doe',
+    phoneNumber: '+254712345678',
+  };
+  setFullName(mockUser.fullName);
+  setPhone(mockUser.phoneNumber);
+
     // Set current date automatically for scheduled date
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split('T')[0];
@@ -474,6 +485,8 @@ const RequestScreen = () => {
     ];
     setCollectionCenters(mockCenters);
   }, [location]);
+  
+  
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -493,21 +506,42 @@ const RequestScreen = () => {
     }
   };
 
-  const onChangeDate = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios'); // On Android close picker after select
-    if (selectedDate) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      selectedDate.setHours(0, 0, 0, 0);
+  // const onChangeDate = (event, selectedDate) => {
+  // //   setShowDatePicker(Platform.OS === 'ios'); // On Android close picker after select
+  //   if (selectedDate) {
+  //     const today = new Date();
+  //     today.setHours(0, 0, 0, 0);
+  //     selectedDate.setHours(0, 0, 0, 0);
 
-      if (selectedDate < today) {
-        alert("Pickup date cannot be before today's date.");
-        setPickupDate(null);
-      } else {
-        setPickupDate(selectedDate);
-      }
-    }
-  };
+  //     if (selectedDate < today) {
+  //       alert("Pickup date cannot be before today's date.");
+  //       setPickupDate(null);
+  //     } else {
+  //       setPickupDate(selectedDate);
+  //     }
+  //   }
+  // };
+const onChangeDate = (event, selectedDate) => {
+  setShowDatePicker(false);
+  if (selectedDate) {
+    // Adjust timezone offset manually
+    const correctedDate = new Date(selectedDate.getTime() + selectedDate.getTimezoneOffset() * 60000);
+    setPickupDate(correctedDate);
+  }
+};
+
+const onChangeTime = (event, selectedTime) => {
+  setShowTimePicker(false);
+  if (selectedTime) {
+    const hours = selectedTime.getHours();
+    const minutes = selectedTime.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHour = ((hours + 11) % 12 + 1);
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+    const formattedTime = `${formattedHour}:${formattedMinutes} ${ampm}`;
+    setPickupTime(formattedTime);
+  }
+};
 
   const showDatepicker = () => {
     setShowDatePicker(true);
@@ -549,7 +583,10 @@ const RequestScreen = () => {
       fullName,
       phone,
       location,
+      // pickupDate: formatDate(pickupDate),
       pickupDate: formatDate(pickupDate),
+pickupTime,
+
       scheduledDate,
       scrapType,
       details,
@@ -606,6 +643,35 @@ const RequestScreen = () => {
           onChange={onChangeDate}
         />
       )}
+
+      {/* <Text style={styles.label}>Preffered Pickup Time</Text>
+      <TextInput
+  style={styles.input}
+  placeholder="Preferred Pickup Time (e.g. 10:00 AM)"
+  value={pickupTime}
+  onChangeText={setPickupTime}
+/> */}
+
+<Text style={styles.label}>Preferred Pickup Time</Text>
+<TouchableOpacity
+  style={styles.input}
+  onPress={() => setShowTimePicker(true)}
+  activeOpacity={0.7}
+>
+  <Text style={{ color: pickupTime ? '#000' : '#aaa', fontSize: 16 }}>
+    {pickupTime || 'Select Pickup Time'}
+  </Text>
+</TouchableOpacity>
+
+{showTimePicker && (
+  <DateTimePicker
+    value={new Date()}
+    mode="time"
+    display="default"
+    onChange={onChangeTime}
+  />
+)}
+
 
       <Text style={styles.label}>Scrap Type</Text>
       <View style={styles.pickerContainer}>

@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Chome from './Chome';
 import Pickups from './Pickups';
 import Chistory from './Chistory';
+import CollectorPayment from './CollectorPayment';
 // import Messaging from './Messaging';
 
 const Tab = createBottomTabNavigator();
@@ -43,6 +44,7 @@ export default function CollectorDashboard() {
                 switch (route.name) {
                   case 'Chome': iconName = 'home'; break;
                   case 'Pickups': iconName = 'cart'; break;
+                  case 'CollectorPayment': iconName = 'cash'; break;
                   case 'Chistory': iconName = 'time'; break;
                   // case 'Messaging': iconName = 'chatbubble'; break;
                 }
@@ -55,6 +57,7 @@ export default function CollectorDashboard() {
           >
             <Tab.Screen name="Home" component={Chome} />
             <Tab.Screen name="Pickups" component={Pickups} />
+            <Tab.Screen name="Pay" component={CollectorPayment} />
             <Tab.Screen name="History" component={Chistory} />
             {/* <Tab.Screen name="Messaging" component={Messaging} /> */}
           </Tab.Navigator>
