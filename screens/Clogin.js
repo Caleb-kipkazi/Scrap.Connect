@@ -191,7 +191,7 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Login({ navigation }) {
+export default function CollectorLogin({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
@@ -280,11 +280,11 @@ export default function Login({ navigation }) {
         </TouchableOpacity>
 
         <View style={styles.linksContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate("CsignUp")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Csignup")}>
             <Text style={styles.linkText}>Don't have an account?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate("CResetPassword")}>
+          <TouchableOpacity onPress={() => navigation.navigate("CResetpassword")}>
             <Text style={[styles.linkText, { marginTop: 10 }]}>Forgot Password?</Text>
           </TouchableOpacity>
         </View>
