@@ -3,7 +3,9 @@ const router=express.Router();
 const { userSignup } = require('./controllers/userSignup');
 const { userSignin, userSignout, getUserInfo } = require("./controllers/userSignin");
 const { centerSignup } = require("./controllers/centerSignup");
-const { centerSignin, getCenterInfo, centerSignout } = require("./controllers/centerSignin");
+const { centerSignin, getCenterInfo, centerSignout, getCollectors } = require("./controllers/centerSignin");
+const { registerCollector } = require("./controllers/collectorSignup");
+const { collectorSignin } = require("./controllers/collectorSignin");
 
 
 
@@ -15,15 +17,22 @@ const { centerSignin, getCenterInfo, centerSignout } = require("./controllers/ce
 // const { verifyToken } = require("./middlewares/verifyToken");
 
 
-
+// Norma user-homeowner
 router.post('/user/signup/', userSignup);
 router.post('/user/signin/',userSignin);
 router.get('/user/info/:userId',getUserInfo)
 router.post('/user/signout/',userSignout);
-router.get('/center/info/:centerId',getCenterInfo)
+
+// center
+router.get('/center/info/:centerId',getCenterInfo);
+router.get('/center/collectors/:centerId',getCollectors)
 router.post('/center/signup/',centerSignup);
 router.post('/center/signin/',centerSignin);
 router.post('/center/signout/',centerSignout);
+
+// collector
+router.post('/collector/signup/',registerCollector)
+router.post('/collector/signin/',collectorSignin)
 
 
 

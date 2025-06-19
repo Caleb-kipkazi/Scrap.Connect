@@ -10,7 +10,7 @@ centerName:{
     type:String,
     required:true
 },
-username:{
+centerUsername:{
     type:String,
     required:true,
     unique:true

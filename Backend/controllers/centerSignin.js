@@ -1,6 +1,7 @@
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 const Center=require('../models/center');
+const Collector = require('../models/collector');
 
 const centerSignin=async(req,res)=>{
 
@@ -81,8 +82,36 @@ const centerSignout=(req,res)=>{
     }
 }
 
+// get all registered collectors of the collection center
+const getCollectors=async(req,res)=>{
+    const {centerId}=req.params;
+    try {
+        const center=await Center.findById(centerId);
+        if(!center){
+            return res.status(404).json({message:"Collection center not found"});
+        }
+
+        const collectors=await Collector.find({center:centerId});
+
+        if(collectors.length===0){
+            return res.status(404).json({message:"No collectors registered for this collection center"});
+        }
+        return res.status(200).json({
+            message:"Collectors fetched successfully!",
+            success:true,
+            collectors:collectors,
+            totalCollectors:collectors.length
+        })
+    } catch (error) {
+        return res.status(500).json({message:"Error fetching collectors",error})
+    }
+}
+
+
+
 module.exports={
     centerSignin,
     centerSignout,
-    getCenterInfo
+    getCenterInfo,
+    getCollectors
 }

@@ -5,7 +5,7 @@ const centerSignup=async(req,res)=>{
     try {
         let {
             email,
-            username,
+            centerUsername,
             password,
             phoneNo,
             location,
@@ -14,15 +14,15 @@ const centerSignup=async(req,res)=>{
 
         // Trim and convert to lowercase
         email=email.trim().toLowerCase();
-        username=username.trim().toLowerCase();
+        centerUsername=centerUsername.trim().toLowerCase();
         location=location.trim().toLowerCase();
         centerName=centerName.trim().toLowerCase();
         
-        if(!(username && email && password && phoneNo && location && centerName)){
+        if(!(centerUsername && email && password && phoneNo && location && centerName)){
             return res.status(400).json({message: 'All fields are required'});
           }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
             return res.status(400).json({message: 'Invalid email'});
-          }else if(!/^[a-zA-Z\s]*$/.test(username)){
+          }else if(!/^[a-zA-Z\s]*$/.test(centerUsername)){
             return res.status(400).json({message: 'Name must contain only letters'});
           }
         
@@ -39,7 +39,7 @@ const centerSignup=async(req,res)=>{
             email,
             phoneNo,
             password:hashedPassword,
-            username,
+            centerUsername,
             location,
             centerName
         })
