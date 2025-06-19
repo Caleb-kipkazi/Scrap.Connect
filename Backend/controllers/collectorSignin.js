@@ -1,6 +1,7 @@
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 const Collector=require('../models/collector');
+const Request = require('../models/Requests');
 
 const collectorSignin=async(req,res)=>{
 
@@ -67,6 +68,33 @@ const getUserInfo=async(req,res)=>{
     }
 }
 
+// get all requests made to a collector
+const getAllCollectorRequests=async(req,res)=>{
+    const {collectorId}=req.params;
+
+    try {
+        const requests=await Request.find({collectorId})
+        .sort({pickupDate:1})
+
+        if(requests.length===0){
+            return res.status(404).json({
+                message:"No requests assigned to this collector!"
+            })
+        }
+
+        res.status(200).json({
+            message:"Collector requests fetched successfully!",
+            success:true,
+            totalRequests:requests.length,
+            requests
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:"Internal server error",error
+        })
+    }
+}
+
 const userSignout=(req,res)=>{
     try {
         res.clearCookie('access_token').status(200).json({
@@ -80,6 +108,7 @@ const userSignout=(req,res)=>{
 
 module.exports={
     collectorSignin,
+    getAllCollectorRequests,
     userSignout,
     getUserInfo
 }

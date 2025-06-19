@@ -5,10 +5,10 @@ const { userSignin, userSignout, getUserInfo } = require("./controllers/userSign
 const { centerSignup } = require("./controllers/centerSignup");
 const { centerSignin, getCenterInfo, centerSignout, getCollectors, getAllCenterRequests } = require("./controllers/centerSignin");
 const { registerCollector } = require("./controllers/collectorSignup");
-const { collectorSignin } = require("./controllers/collectorSignin");
+const { collectorSignin, getAllCollectorRequests } = require("./controllers/collectorSignin");
 const { requestOTP } = require("./controllers/requestOTP");
 const { resetPassword } = require("./controllers/resetPassword");
-const { createRequest } = require("./controllers/requestController");
+const { createRequest, assignCollectorToRequest } = require("./controllers/requestController");
 
 
 
@@ -42,7 +42,9 @@ router.post('/auth/requestOTP/',requestOTP)
 router.post('/auth/resetPassword/',resetPassword)
 
 // requests
-router.get('/requests/:centerId/list/',getAllCenterRequests)
+router.get('/requests/center/:centerId/list/',getAllCenterRequests)
+router.get('/requests/collector/:collectorId/list/',getAllCollectorRequests)
+router.post('/request/assign/',assignCollectorToRequest)
 router.post('/requests/:userId/create/',createRequest);
 
 
