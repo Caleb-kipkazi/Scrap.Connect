@@ -1,20 +1,24 @@
 const bcrypt=require("bcrypt");
-const Admin=require('../models/admin');
+const Center=require('../models/center');
 
-const adminSignup=async(req,res)=>{
+const centerSignup=async(req,res)=>{
     try {
         let {
             email,
             username,
             password,
             phoneNo,
+            location,
+            centerName
         }=req.body;
 
         // Trim and convert to lowercase
         email=email.trim().toLowerCase();
         username=username.trim().toLowerCase();
+        location=location.trim().toLowerCase();
+        centerName=centerName.trim().toLowerCase();
         
-        if(!(username && email && password)){
+        if(!(username && email && password && phoneNo && location && centerName)){
             return res.status(400).json({message: 'All fields are required'});
           }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
             return res.status(400).json({message: 'Invalid email'});
@@ -22,26 +26,28 @@ const adminSignup=async(req,res)=>{
             return res.status(400).json({message: 'Name must contain only letters'});
           }
         
-        //   check if user exists
-        const adminExists=await Admin.findOne({email});
-        if(adminExists){
-            return res.status(400).json({message:"User already exists"});
+        //   check if center exists
+        const centerExists=await Center.findOne({email});
+        if(centerExists){
+            return res.status(400).json({message:"Collection center already exists"});
         }
 
         //hash password
         const hashedPassword=await bcrypt.hash(password,10);
 
-        const newAdmin=new Admin({
+        const newCenter=new Center({
             email,
             phoneNo,
             password:hashedPassword,
             username,
+            location,
+            centerName
         })
 
-        const createdUser=await newAdmin.save();
+        const createdUser=await newCenter.save();
 
         return res.status(200).json({
-            message:"Account created successfully!",
+            message:"Collection center created successfully!",
             admin:createdUser,
             success:true
         })
@@ -52,5 +58,5 @@ const adminSignup=async(req,res)=>{
 
 
 module.exports={
-    adminSignup
+    centerSignup
 }

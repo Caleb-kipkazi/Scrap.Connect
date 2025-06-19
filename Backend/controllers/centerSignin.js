@@ -1,0 +1,88 @@
+const bcrypt=require("bcrypt");
+const jwt=require("jsonwebtoken");
+const Center=require('../models/center');
+
+const centerSignin=async(req,res)=>{
+
+    try {
+        let {username,password}=req.body;
+
+        username=username.trim().toLowerCase()
+
+        if(!username ||!password){
+            return res.status(400).json({message:"Username and Password are required!"})
+        }
+    
+        const center=await Center.findOne({username});
+    
+        if(!center){
+            return res.status(400).json({message:"Collection center does not exist!"})
+        }
+    
+        const isMatch=await bcrypt.compare(password,center.password);
+        if(!isMatch){
+            return res.status(400).json({message:"Invalid Password"})
+        }
+    
+        //token generation
+        const token=jwt.sign({
+            centerId:center._id,
+            username:center.username
+        },
+        process.env.JWT_SECRET,
+        {expiresIn:"1h"}
+        );
+    
+        return res.status(200).cookie('access_token',token,{httpOnly:true}).json({
+            message:"Login successfull!",
+            success:true,
+            token,
+            user:{
+                id:center._id,
+                username:center.username
+            }
+        })
+        
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+   
+}
+
+// get User Info
+const getCenterInfo=async(req,res)=>{
+    const {userId}=req.params;
+    try {
+        const user=await User.findById(userId);
+        if(!user){
+            return res.status(404).json({message:"User not found"});
+        }
+
+        return res.status(200).json({
+            message:"User Info Fetched Successfully!",
+            success:true,
+            user
+        })
+
+    } catch (error) {
+        return res.status(500).json({message:"Error fetching user info",error})
+        
+    }
+}
+
+const userSignout=(req,res)=>{
+    try {
+        res.clearCookie('access_token').status(200).json({
+            message:"Signout successful!",
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
+
+module.exports={
+    centerSignin,
+    userSignout,
+    getCenterInfo
+}

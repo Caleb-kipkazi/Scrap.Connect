@@ -5,13 +5,17 @@
 
 const mongoose=require("mongoose");
 const Schema=mongoose.Schema;
-const adminSignupSchema=new Schema({
-email:{
+const centerSignupSchema=new Schema({
+centerName:{
+    type:String,
+    required:true
+},
+username:{
     type:String,
     required:true,
     unique:true
 },
-username:{
+email:{
     type:String,
     required:true,
     unique:true
@@ -20,6 +24,10 @@ phoneNo:{
     type:Number,
     required:true,
     unique:true
+},
+location:{
+    type:String,
+    required:true
 },
 password:{
     type:String,
@@ -35,5 +43,5 @@ otpExpires:{
 }
 })
 
-const Admin=mongoose.model("Admin",adminSignupSchema);
-module.exports=Admin;
+const Center=mongoose.model("Center",centerSignupSchema);
+module.exports=Center;

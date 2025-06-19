@@ -2,7 +2,8 @@ const express=require("express");
 const router=express.Router();
 const { userSignup } = require('./controllers/userSignup');
 const { userSignin, userSignout, getUserInfo } = require("./controllers/userSignin");
-const { adminSignup } = require("./controllers/adminSignup");
+const { centerSignup } = require("./controllers/centerSignup");
+const { centerSignin } = require("./controllers/centerSignin");
 
 
 
@@ -19,7 +20,8 @@ router.post('/user/signup/', userSignup);
 router.post('/user/signin/',userSignin);
 router.get('/user/info/:userId',getUserInfo)
 router.post('/user/signout/',userSignout);
-router.post('/admin/signup/',adminSignup);
+router.post('/center/signup/',centerSignup);
+router.post('/center/signin/',centerSignin)
 
 
 
