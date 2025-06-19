@@ -5,9 +5,9 @@ const cors=require("cors");
 const PORT=process.env.PORT||5001;
 const router=require('./routes')
 const app=express();
-const paymentRoutes=require('./routes/paymentRoutes');
-const requestRoutes=require('./routes/requestRoutes');
-const collectionCenterRoutes=require('./routes/collectionCenterRoutes');
+// const paymentRoutes=require('./routes/paymentRoutes');
+// const requestRoutes=require('./routes/requestRoutes');
+// const collectionCenterRoutes=require('./routes/collectionCenterRoutes');
 
 
 
@@ -15,9 +15,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use('/api/v1',router);
-app.use('/api/v1/payments', paymentRoutes);
-app.use('/api/v1/requests', requestRoutes);
-app.use('/api/v1/collection-centers', collectionCenterRoutes);
+// app.use('/api/v1/payments', paymentRoutes);
+// app.use('/api/v1/requests', requestRoutes);
+// app.use('/api/v1/collection-centers', collectionCenterRoutes);
 
 
 
