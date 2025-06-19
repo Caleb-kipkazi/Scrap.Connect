@@ -109,7 +109,247 @@ const assignCollectorToRequest=async(req,res)=>{
   }
 }
 
+// get the all requests made by the homeOwener-normal user
+const getAllUserRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try{
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total requests made by the user
+    const allRequests=await Request.find({homeownerId:userId});
+    res.status(200).json({
+      message:"User Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allRequests.length,
+      requests:allRequests
+    })
+  }catch(error){
+    return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+
+}
+
+// get all approved requests
+const getUserApprovedRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total requests made by the user
+    const allApprovedRequests=await Request.find({homeownerId:userId ,status:"approved"});
+    res.status(200).json({
+      message:"User Approved Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allApprovedRequests.length,
+      requests:allApprovedRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+// get all pending requests
+const getUserPendingRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total requests made by the user
+    const allPendingRequests=await Request.find({homeownerId:userId ,status:"pending"});
+    res.status(200).json({
+      message:"User Pending Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allPendingRequests.length,
+      requests:allPendingRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+// get all rejected requests
+const getUserRejectedRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total requests made by the user
+    const allRejectedRequests=await Request.find({homeownerId:userId ,status:"rejected"});
+    res.status(200).json({
+      message:"User Rejected Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allRejectedRequests.length,
+      requests:allRejectedRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+//get all collected requests
+const getUserCollectedRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total collected requests made by the user
+    const allCollectedRequests=await Request.find({homeownerId:userId ,status:"collected"});
+    res.status(200).json({
+      message:"User Collected Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allCollectedRequests.length,
+      requests:allCollectedRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+// get user's total points for the approved requests
+const getUserApprovedPoints=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total points for the user
+    const allApprovedRequests=await Request.find({homeownerId:userId ,status:"approved"});
+    const totalPoints=allApprovedRequests.length*10
+    res.status(200).json({
+      message:"User Points fetched successfully!",
+      success:true,
+      user:user.username,
+      totalPoints:totalPoints
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+// all requests by status
+const getRequestByStatus=async(req,res)=>{
+  const {status}=req.params
+  try {
+
+    const allRequests=await Request.find({status});
+    res.status(200).json({
+      message:"Requests fetched successfully!",
+      success:true,
+      totalRequests:allRequests.length,
+      Requests:allRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+
+// update a request
+
+const updateRequestStatus = async (req, res) => {
+  const { requestId } = req.params;
+  const { status } = req.body;
+
+  const validStatuses = ['pending', 'approved', 'rejected', 'collected'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({
+      message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+    });
+  }
+
+  try {
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    request.status = status;
+
+    // Set completion or approval timestamp
+    if (status === 'approved') {
+      request.approvedAt = new Date();
+    }
+    if (status === 'collected') {
+      request.completedAt = new Date();
+    }
+
+    await request.save();
+
+    res.status(200).json({
+      message: "Request status updated successfully",
+      success: true,
+      request
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
 module.exports = { 
   createRequest,
-  assignCollectorToRequest
+  assignCollectorToRequest,
+  getAllUserRequests,
+  getUserApprovedRequests,
+  getUserPendingRequests,
+  getUserRejectedRequests,
+  getUserCollectedRequests,
+  getUserApprovedPoints,
+  getRequestByStatus,
+  updateRequestStatus
 };

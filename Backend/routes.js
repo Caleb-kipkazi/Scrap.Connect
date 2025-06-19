@@ -8,7 +8,18 @@ const { registerCollector } = require("./controllers/collectorSignup");
 const { collectorSignin, getAllCollectorRequests } = require("./controllers/collectorSignin");
 const { requestOTP } = require("./controllers/requestOTP");
 const { resetPassword } = require("./controllers/resetPassword");
-const { createRequest, assignCollectorToRequest } = require("./controllers/requestController");
+const { 
+  createRequest,
+  assignCollectorToRequest,
+  getAllUserRequests,
+  getUserApprovedRequests,
+  getUserPendingRequests,
+  getUserRejectedRequests,
+  getUserCollectedRequests,
+  getUserApprovedPoints,
+  getRequestByStatus,
+  updateRequestStatus
+} = require("./controllers/requestController");
 
 
 
@@ -42,8 +53,17 @@ router.post('/auth/requestOTP/',requestOTP)
 router.post('/auth/resetPassword/',resetPassword)
 
 // requests
-router.get('/requests/center/:centerId/list/',getAllCenterRequests)
+router.get('/requests/center/:centerId/list/',getAllCenterRequests);
+router.get('/requests/user/:userId/list/',getAllUserRequests);
+router.get('/requests/user/:userId/approved/',getUserApprovedRequests);
+router.get('/requests/user/:userId/pending/',getUserPendingRequests);
+router.get('/requests/user/:userId/rejected',getUserRejectedRequests);
+router.get('/requests/user/:userId/collected/',getUserCollectedRequests);
+router.get('/requests/user/:userId/points/',getUserApprovedPoints)
+router.get('/requests/:status/list',getRequestByStatus)
 router.get('/requests/collector/:collectorId/list/',getAllCollectorRequests)
+
+router.post('/requests/:requestId/update/',updateRequestStatus)
 router.post('/request/assign/',assignCollectorToRequest)
 router.post('/requests/:userId/create/',createRequest);
 
