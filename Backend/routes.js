@@ -3,7 +3,7 @@ const router=express.Router();
 const { userSignup } = require('./controllers/userSignup');
 const { userSignin, userSignout, getUserInfo } = require("./controllers/userSignin");
 const { centerSignup } = require("./controllers/centerSignup");
-const { centerSignin } = require("./controllers/centerSignin");
+const { centerSignin, getCenterInfo, centerSignout } = require("./controllers/centerSignin");
 
 
 
@@ -20,8 +20,10 @@ router.post('/user/signup/', userSignup);
 router.post('/user/signin/',userSignin);
 router.get('/user/info/:userId',getUserInfo)
 router.post('/user/signout/',userSignout);
+router.get('/center/info/:centerId',getCenterInfo)
 router.post('/center/signup/',centerSignup);
-router.post('/center/signin/',centerSignin)
+router.post('/center/signin/',centerSignin);
+router.post('/center/signout/',centerSignout);
 
 
 

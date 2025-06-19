@@ -49,28 +49,28 @@ const centerSignin=async(req,res)=>{
    
 }
 
-// get User Info
+// get center Info
 const getCenterInfo=async(req,res)=>{
-    const {userId}=req.params;
+    const {centerId}=req.params;
     try {
-        const user=await User.findById(userId);
-        if(!user){
-            return res.status(404).json({message:"User not found"});
+        const center=await Center.findById(centerId);
+        if(!center){
+            return res.status(404).json({message:"Collection center not found"});
         }
 
         return res.status(200).json({
-            message:"User Info Fetched Successfully!",
+            message:"Collection center Info Fetched Successfully!",
             success:true,
-            user
+            center
         })
 
     } catch (error) {
-        return res.status(500).json({message:"Error fetching user info",error})
+        return res.status(500).json({message:"Error fetching collection center info",error})
         
     }
 }
 
-const userSignout=(req,res)=>{
+const centerSignout=(req,res)=>{
     try {
         res.clearCookie('access_token').status(200).json({
             message:"Signout successful!",
@@ -83,6 +83,6 @@ const userSignout=(req,res)=>{
 
 module.exports={
     centerSignin,
-    userSignout,
+    centerSignout,
     getCenterInfo
 }
