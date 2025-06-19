@@ -2,19 +2,20 @@ const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 const Center=require('../models/center');
 const Collector = require('../models/collector');
+const Requests=require('../models/Requests')
 
 const centerSignin=async(req,res)=>{
 
     try {
-        let {username,password}=req.body;
+        let {centerUsername,password}=req.body;
 
-        username=username.trim().toLowerCase()
+        centerUsername=centerUsername.trim().toLowerCase()
 
-        if(!username ||!password){
+        if(!centerUsername ||!password){
             return res.status(400).json({message:"Username and Password are required!"})
         }
     
-        const center=await Center.findOne({username});
+        const center=await Center.findOne({centerUsername});
     
         if(!center){
             return res.status(400).json({message:"Collection center does not exist!"})
@@ -107,11 +108,43 @@ const getCollectors=async(req,res)=>{
     }
 }
 
+// get all center requests
+const getAllCenterRequests=async(req,res)=>{
+    const {centerId}=req.params;
+
+    try {
+        const center =await Center.findById(centerId);
+
+        if(!center){
+            return res.status(404).json({message:"Collection center not found"});
+        }
+
+        const requests=await Requests.find({collectionCenter:centerId})
+
+        if(requests.length===0){
+            return res.status(404).json({message:"No collection requests made for this collection center"});
+            }
+            return res.status(200).json({
+                message:"Collection Requests fetched successfully!",
+                success:true,
+                requests:requests,
+                totalRequests:requests.length
+            })
+        }
+        catch (error) {
+        return res.status(500).json({
+            message:"Error fetching center requests",
+            success:false
+        })
+    }
+
+}
 
 
 module.exports={
     centerSignin,
     centerSignout,
     getCenterInfo,
-    getCollectors
+    getCollectors,
+    getAllCenterRequests
 }

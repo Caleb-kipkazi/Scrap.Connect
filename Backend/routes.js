@@ -3,11 +3,12 @@ const router=express.Router();
 const { userSignup } = require('./controllers/userSignup');
 const { userSignin, userSignout, getUserInfo } = require("./controllers/userSignin");
 const { centerSignup } = require("./controllers/centerSignup");
-const { centerSignin, getCenterInfo, centerSignout, getCollectors } = require("./controllers/centerSignin");
+const { centerSignin, getCenterInfo, centerSignout, getCollectors, getAllCenterRequests } = require("./controllers/centerSignin");
 const { registerCollector } = require("./controllers/collectorSignup");
 const { collectorSignin } = require("./controllers/collectorSignin");
 const { requestOTP } = require("./controllers/requestOTP");
 const { resetPassword } = require("./controllers/resetPassword");
+const { createRequest } = require("./controllers/requestController");
 
 
 
@@ -39,6 +40,10 @@ router.post('/collector/signin/',collectorSignin)
 // otp
 router.post('/auth/requestOTP/',requestOTP)
 router.post('/auth/resetPassword/',resetPassword)
+
+// requests
+router.get('/requests/:centerId/list/',getAllCenterRequests)
+router.post('/requests/:userId/create/',createRequest);
 
 
 // router.post('/payments', verifyToken, createPayment);
