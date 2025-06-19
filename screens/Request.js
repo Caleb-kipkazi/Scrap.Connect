@@ -444,7 +444,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+// import DateTimePicker from '@react-native-community/datetimepicker';
 const RequestScreen = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
