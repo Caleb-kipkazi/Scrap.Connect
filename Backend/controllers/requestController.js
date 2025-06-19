@@ -1,15 +1,17 @@
-// controllers/requestController.js
-const Request = require('../models/Request');
-const User = require('../models/User');
+const Request = require('../models/Requests');
+const User = require('../models/userModel');
+const Center=require('../models/center');
+const Collector = require('../models/collector');
 
 const createRequest = async (req, res) => {
   try {
-    const userId = req.user.id; // From the JWT token middleware
+    const {userId} = req.params
+
     const user = await User.findById(userId);
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const {
+    let {
       location,
       pickupDate,
       pickupTime,
@@ -20,27 +22,334 @@ const createRequest = async (req, res) => {
       imageUrl
     } = req.body;
 
+    // Confirm the center exists
+    const center = await Center.findById(collectionCenter);
+    if (!center) {
+      return res.status(404).json({ message: "Collection center not found" });
+    }
+
     const newRequest = new Request({
       homeownerId: userId,
-      fullName: user.fullName,
-      phoneNumber: user.phoneNumber,
+      fullName: user.username,
+      phoneNumber: user.phoneNo,
       location,
       pickupDate,
       pickupTime,
       scrapType,
       description,
       weight,
-      collectionCenter,
-      imageUrl,
+      collectionCenter:center._id,
+      imageUrl
     });
 
     await newRequest.save();
-    res.status(201).json({ message: "Request submitted successfully", request: newRequest });
+
+    res.status(201).json({
+      message: "Request submitted successfully",
+      request: newRequest,
+      success: true
+    });
 
   } catch (error) {
     console.error("Error creating request:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
-module.exports = { createRequest };
+// assign collector request
+const assignCollectorToRequest=async(req,res)=>{
+  const {requestId,collectorId}=req.body;
+
+  try {
+    
+    // check if request exists
+    const request=await Request.findById(requestId)
+    if(!request){
+      return res.status(404).json({message:"Request not found!"})
+    }
+
+    // Prevent assigning if already assigned to a collector
+    if (request.collectorId) {
+      return res.status(400).json({
+        message: "This request has already been assigned to a collector."
+      });
+    }
+
+    // check if collector exists
+    const collector=await Collector.findById(collectorId)
+    if(!collector){
+      return res.status(404).json({message:"Collector not found!"})
+    }
+
+    // ensure request and collector belong to the same center
+    if(String(request.collectionCenter) !== String(collector.center)){
+      return res.status(400).json({
+        message:"Collector does not belong to the collection center the request was made to!"
+      });
+    }
+
+    // assign collector to the request
+    request.collectorId=collectorId;
+    request.status='approved';
+    request.approvedAt=new Date();
+    
+    await request.save()
+
+    const populatedRequest = await Request.findById(requestId)
+    .populate('collectorId')
+    .populate('collectionCenter');
+
+    res.status(200).json({
+      message:"Collector assigned to request successfully!",
+      success:true,
+      request:populatedRequest
+    });
+  } catch (error) {
+    res.status(500).json({message:"server error",error})
+  }
+}
+
+// get the all requests made by the homeOwener-normal user
+const getAllUserRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try{
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total requests made by the user
+    const allRequests=await Request.find({homeownerId:userId});
+    res.status(200).json({
+      message:"User Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allRequests.length,
+      requests:allRequests
+    })
+  }catch(error){
+    return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+
+}
+
+// get all approved requests
+const getUserApprovedRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total requests made by the user
+    const allApprovedRequests=await Request.find({homeownerId:userId ,status:"approved"});
+    res.status(200).json({
+      message:"User Approved Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allApprovedRequests.length,
+      requests:allApprovedRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+// get all pending requests
+const getUserPendingRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total requests made by the user
+    const allPendingRequests=await Request.find({homeownerId:userId ,status:"pending"});
+    res.status(200).json({
+      message:"User Pending Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allPendingRequests.length,
+      requests:allPendingRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+// get all rejected requests
+const getUserRejectedRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total requests made by the user
+    const allRejectedRequests=await Request.find({homeownerId:userId ,status:"rejected"});
+    res.status(200).json({
+      message:"User Rejected Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allRejectedRequests.length,
+      requests:allRejectedRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+//get all collected requests
+const getUserCollectedRequests=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total collected requests made by the user
+    const allCollectedRequests=await Request.find({homeownerId:userId ,status:"collected"});
+    res.status(200).json({
+      message:"User Collected Requests fetched successfully!",
+      success:true,
+      user:user.username,
+      totalRequests:allCollectedRequests.length,
+      requests:allCollectedRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+// get user's total points for the approved requests
+const getUserApprovedPoints=async(req,res)=>{
+  const {userId}=req.params;
+
+  try {
+    // check if user exists
+    const user=await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message:"User not found!"});
+    }
+
+    // total points for the user
+    const allApprovedRequests=await Request.find({homeownerId:userId ,status:"approved"});
+    const totalPoints=allApprovedRequests.length*10
+    res.status(200).json({
+      message:"User Points fetched successfully!",
+      success:true,
+      user:user.username,
+      totalPoints:totalPoints
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+// all requests by status
+const getRequestByStatus=async(req,res)=>{
+  const {status}=req.params
+  try {
+
+    const allRequests=await Request.find({status});
+    res.status(200).json({
+      message:"Requests fetched successfully!",
+      success:true,
+      totalRequests:allRequests.length,
+      Requests:allRequests
+    })
+
+  } catch (error) {
+      return res.status(500).json({
+      message:"Internal server error",error
+    })
+  }
+}
+
+
+// update a request
+
+const updateRequestStatus = async (req, res) => {
+  const { requestId } = req.params;
+  const { status } = req.body;
+
+  const validStatuses = ['pending', 'approved', 'rejected', 'collected'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({
+      message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+    });
+  }
+
+  try {
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    request.status = status;
+
+    // Set completion or approval timestamp
+    if (status === 'approved') {
+      request.approvedAt = new Date();
+    }
+    if (status === 'collected') {
+      request.completedAt = new Date();
+    }
+
+    await request.save();
+
+    res.status(200).json({
+      message: "Request status updated successfully",
+      success: true,
+      request
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
+module.exports = { 
+  createRequest,
+  assignCollectorToRequest,
+  getAllUserRequests,
+  getUserApprovedRequests,
+  getUserPendingRequests,
+  getUserRejectedRequests,
+  getUserCollectedRequests,
+  getUserApprovedPoints,
+  getRequestByStatus,
+  updateRequestStatus
+};

@@ -30,6 +30,14 @@ const collectorSchema = new Schema({
     ref: "Center", 
     required: true,
   },
+  resetOtp:{
+    type:Number,
+    required:false
+  },
+  otpExpires:{
+    type:Date,
+    required:false
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -38,7 +38,8 @@ const requestSchema = new mongoose.Schema({
     required: true
   },
   collectionCenter: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Center',
     required: true
   },
   imageUrl: {
@@ -51,7 +52,7 @@ const requestSchema = new mongoose.Schema({
   },
   collectorId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Collector',
     default: null
   },
   requestDate: {
