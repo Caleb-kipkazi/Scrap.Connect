@@ -25,6 +25,14 @@ const collectionCenterSchema = new Schema({
     type: String,
     required: true,
   },
+  resetOtp:{
+    type:Number,
+    required:false
+  },  
+  otpExpires:{
+    type:Date,
+    required:false
+  },
   createdAt: {
     type: Date,
     default: Date.now,

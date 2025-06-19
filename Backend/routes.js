@@ -6,6 +6,8 @@ const { centerSignup } = require("./controllers/centerSignup");
 const { centerSignin, getCenterInfo, centerSignout, getCollectors } = require("./controllers/centerSignin");
 const { registerCollector } = require("./controllers/collectorSignup");
 const { collectorSignin } = require("./controllers/collectorSignin");
+const { requestOTP } = require("./controllers/requestOTP");
+const { resetPassword } = require("./controllers/resetPassword");
 
 
 
@@ -34,7 +36,9 @@ router.post('/center/signout/',centerSignout);
 router.post('/collector/signup/',registerCollector)
 router.post('/collector/signin/',collectorSignin)
 
-
+// otp
+router.post('/auth/requestOTP/',requestOTP)
+router.post('/auth/resetPassword/',resetPassword)
 
 
 // router.post('/payments', verifyToken, createPayment);
