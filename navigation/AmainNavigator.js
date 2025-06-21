@@ -10,6 +10,9 @@ import Messaging from '../screens/Messaging'
 import FAQs from '../screens/FAQs';
 import AboutUs from '../screens/AboutUs';
 import ContactUs from '../screens/ContactUs';
+import RequestDetailsScreen from '../screens/RequestDetailsScreen';
+
+// import RequestsStack from './RequestsStack';
 // import History from '../screens/History';
 // import Rewards from '../screens/Rewards';
 // import Feedback from '../screens/Feedback';
@@ -27,6 +30,8 @@ function DashboardStack() {
       <Stack.Screen name="FAQs" component={FAQs} />
       <Stack.Screen name="AboutUs" component={AboutUs} />
       <Stack.Screen name="ContactUs" component={ContactUs} />
+      <Stack.Screen name="RequestDetails" component={RequestDetailsScreen} options={{ title: 'Request Details' }} />
+      
       {/* <Stack.Screen name="History" component={History} /> */}
       {/* <Stack.Screen name="Rewards" component={Rewards}/> */}
     </Stack.Navigator>
@@ -90,6 +95,15 @@ export default function AmainNavigator() {
           drawerIcon: ({ color, size }) => <Ionicons name="call-outline" size={size} color={color} />,
         }}
       />
+
+      {/* <Drawer.Screen
+  name="Requests"
+  component={RequestsStack}
+  options={{
+    drawerIcon: ({ color, size }) => <Ionicons name="list-outline" size={size} color={color} />,
+  }}
+/> */}
+
       {/* <Drawer.Screen
         name="Rewards"
         component={Rewards}

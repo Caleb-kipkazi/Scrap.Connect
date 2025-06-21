@@ -400,7 +400,7 @@ export default function CollectorLogin({ navigation }) {
     try {
       // Corrected endpoint for collector signin
       const response = await axios.post(
-        "http://10.71.125.67:5000/api/v1/collector/signin/", // <-- CORRECTED ENDPOINT
+        "http:// 192.168.197.119:5000/api/v1/collector/signin/", // <-- CORRECTED ENDPOINT
         {
           username: username.trim().toLowerCase(), // Use the username state directly
           password,
