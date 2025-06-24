@@ -451,7 +451,7 @@ const Colors = {
 };
 
 // Backend URL - Make sure this matches your actual backend server IP and port
-const BACKEND_URL = "http://192.168.137.246:5000"; 
+const BACKEND_URL = "http://192.168.1.119:5000"; 
 
 export default function RequestDetailsScreen({ route, navigation }) {
     const { requestData } = route.params; 
