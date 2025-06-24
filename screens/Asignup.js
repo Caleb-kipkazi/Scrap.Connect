@@ -310,7 +310,7 @@
 //     }
 
 //     try {
-//       const response = await axios.post('http://  192.168.197.119:5000/api/v1/center/signup/', {
+//       const response = await axios.post('http://    192.168.137.246:5000/api/v1/center/signup/', {
 //         centerUsername: username,
 //         email,
 //         phoneNo: phone,
@@ -481,7 +481,7 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios"; // Import axios for API calls
 
 export default function AdminSignUp({ navigation }) {
-  const [fullName, setFullName] = useState(""); // Will map to centerName
+  const [centerName, setCenterName] = useState(""); // Will map to centerName
   const [centerUsername, setCenterUsername] = useState(""); // NEW: Added for backend's centerUsername
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -508,7 +508,7 @@ export default function AdminSignUp({ navigation }) {
 
   const onRegister = async () => { // Made async for API call
     // Frontend validation
-    if (!fullName || !centerUsername || !email || !phone || !location || !password || !confirmPassword) { // Added centerUsername, removed 'center' as a separate check
+    if (!centerName || !centerUsername || !email || !phone || !location || !password || !confirmPassword) { // Added centerUsername, removed 'center' as a separate check
       Alert.alert("Error", "All fields are required.");
       return;
     }
@@ -540,9 +540,9 @@ export default function AdminSignUp({ navigation }) {
 
     try {
       const response = await axios.post(
-        "http:// 192.168.197.119:5000/api/v1/center/signup/", // Correct API endpoint for Center Signup
+        "http://192.168.137.246:5000/api/v1/center/signup/", // Correct API endpoint for Center Signup
         {
-          centerName: fullName.trim(), // Map fullName to centerName
+          centerName: centerName.trim(), // Map fullName to centerName
           centerUsername: centerUsername.trim().toLowerCase(), // Map new state to centerUsername
           email: email.trim().toLowerCase(),
           phoneNo: parseInt(phone, 10), // Convert phone to number
@@ -573,11 +573,11 @@ export default function AdminSignUp({ navigation }) {
         <Text style={styles.welcome}>Create a new account</Text>
 
         <TextInput
-          placeholder="Center Name (Full Name)" // Clarified placeholder
+          placeholder="Center Name" // Clarified placeholder
           placeholderTextColor="#ccc"
           style={styles.input}
-          value={fullName}
-          onChangeText={setFullName}
+          value={centerName}
+          onChangeText={setCenterName}
         />
 
         <TextInput

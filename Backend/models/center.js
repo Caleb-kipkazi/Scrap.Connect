@@ -8,7 +8,8 @@ const Schema=mongoose.Schema;
 const centerSignupSchema=new Schema({
 centerName:{
     type:String,
-    required:true
+    required:true,
+    unique:true
 },
 centerUsername:{
     type:String,

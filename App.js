@@ -15,6 +15,7 @@ import CollectorSignUp from './screens/Csignup';
 import AdminResetPassword from './screens/AResetpassword';
 import CollectorResetPassword from './screens/CResetpassword';
 import AmainNavigator from './navigation/AmainNavigator';
+import CmainNavigator from './navigation/CmainNavigator';
 // import CollectorDashboard from './screens/CollectorDashboard';
 // import HomeownerDashboard from './screens/HomeownerDashboard';
 
@@ -37,6 +38,7 @@ export default function App() {
         <Stack.Screen name="Clogin" component={CollectorLogin}/>
         <Stack.Screen name="Csignup" component={CollectorSignUp}/>
         <Stack.Screen name="CResetpassword" component={CollectorResetPassword}/>
+        <Stack.Screen name="CmainNavigator" component={CmainNavigator} />
         
         {/* <Stack.Screen name="HomeownerDashboard" component={HomeownerDashboard} /> */}
 

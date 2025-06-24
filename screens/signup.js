@@ -856,7 +856,7 @@ export default function SignUp({ navigation }) {
     setLoading(true); // Set loading to true before API call
 
     try {
-      const response = await fetch("http://192.168.197.119:5000/api/v1/user/signup/", { // Replace YOUR_SERVER_IP_ADDRESS
+      const response = await fetch("http://192.168.137.246:5000/api/v1/user/signup/", { // Replace YOUR_SERVER_IP_ADDRESS
         method: "POST",
         headers: {
           "Content-Type": "application/json",

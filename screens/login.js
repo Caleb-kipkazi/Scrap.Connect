@@ -344,16 +344,16 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.197.119:5000/api/v1/user/signin/",
+        "http://192.168.137.246:5000/api/v1/user/signin/",
         {
-          username: email.trim().toLowerCase(), // assuming email is used as username
+          username: fullName.trim().toLowerCase(), // assuming fullName is used as username
           password,
         },
         {
@@ -384,13 +384,13 @@ export default function Login({ navigation }) {
         <Text style={styles.welcome}>GOOD TO SEE YOU AGAIN HOMEOWNER.</Text>
 
         <TextInput
-          placeholder="Email"
+          placeholder="Full Name"
           placeholderTextColor="#ccc"
           style={styles.input}
-          keyboardType="email-address"
+          // keyboardType="email-address"
           autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
+          value={fullName}
+          onChangeText={setFullName}
         />
 
         <View style={styles.passwordContainer}>
