@@ -361,7 +361,7 @@ export default function CollectorSignUp({ navigation }) {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.119:5000/api/v1/collector/signup/", // Correct endpoint for collector signup
+        "http://192.168.189.119:5000/api/v1/collector/signup/", // Correct endpoint for collector signup
         {
           fullName: fullName,
           username: username.trim().toLowerCase(), // Send username as lowercase

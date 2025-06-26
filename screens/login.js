@@ -351,7 +351,7 @@ export default function Login({ navigation }) {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.1.119:5000/api/v1/user/signin/",
+        "http://192.168.189.119:5000/api/v1/user/signin/",
         {
           username: fullName.trim().toLowerCase(), // assuming fullName is used as username
           password,

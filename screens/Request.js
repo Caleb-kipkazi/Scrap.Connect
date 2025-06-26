@@ -828,7 +828,7 @@
 
 // // // Ensure this IP is correct for your backend server.
 // // // If testing on an Android emulator and backend is on the same machine, use 'http://10.0.2.2:5000'
-// // const BACKEND_URL = "http://192.168.1.119:5000"; 
+// // const BACKEND_URL = "http://192.168.189.119:5000"; 
 
 // // const RequestScreen = () => {
 // //   const [userId, setUserId] = useState(null);
@@ -1350,7 +1350,7 @@
 
 // // // Ensure this IP is correct for your backend server.
 // // // If testing on an Android emulator and backend is on the same machine, use 'http://10.0.2.2:5000'
-// // const BACKEND_URL = "http://192.168.1.119:5000"; 
+// // const BACKEND_URL = "http://192.168.189.119:5000"; 
 
 // // const RequestScreen = () => {
 // //   const [userId, setUserId] = useState(null);
@@ -1874,7 +1874,7 @@
 
 // // Ensure this IP is correct for your backend server.
 // // If testing on an Android emulator and backend is on the same machine, use 'http://10.0.2.2:5000'
-// const BACKEND_URL = "http://192.168.1.119:5000"; 
+// const BACKEND_URL = "http://192.168.189.119:5000"; 
 
 // const RequestScreen = () => {
 //   const [userId, setUserId] = useState(null);
@@ -2400,7 +2400,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // To get 
 
 // Ensure this IP is correct for your backend server.
 // If testing on an Android emulator and backend is on the same machine, use 'http://10.0.2.2:5000'
-const BACKEND_URL = "http://192.168.1.119:5000"; 
+const BACKEND_URL = "http://192.168.189.119:5000"; 
 
 const RequestScreen = () => {
   const [userId, setUserId] = useState(null);

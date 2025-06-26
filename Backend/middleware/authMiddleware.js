@@ -21,7 +21,7 @@
 // module.exports = { verifyToken };
    
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/userModel'); // Adjust the path to your User model
 
 const auth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
