@@ -115,6 +115,7 @@ const {
     updateRequestStatus,
     getUserInfo // getUserInfo is for the homeowner/User model
 } = require("./controllers/requestController");
+const { payHomeowner } = require("./controllers/paymentController"); //payment(Airtime Simulation)
 
 
 // --- User (Homeowner) Routes ---
@@ -143,6 +144,9 @@ router.get('/requests/collector/:collectorId/list/', getAllCollectorRequests); /
 // --- OTP & Password Reset Routes ---
 router.post('/auth/requestOTP/', requestOTP);
 router.post('/auth/resetPassword/', resetPassword);
+
+//Payment route
+router.post('/payment/send',payHomeowner);
 
 // --- Scrap Request Routes ---
 router.post('/requests/:userId/create/', createRequest); // Homeowner creates a request

@@ -48,7 +48,7 @@ export default function Reports() {
       console.log('🎫 Admin token found, making API call...');
 
       // Make API call to backend
-      const response = await fetch('http://192.168.189.119:5000/api/v1/report/center/summary', {
+      const response = await fetch('http://192.168.137.246:5000/api/v1/report/center/summary', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${adminToken}`,
