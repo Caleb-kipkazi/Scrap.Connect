@@ -258,7 +258,7 @@
 //       }
 
 //       const res = await axios.get(
-//         `http://192.168.137.246:5000/api/v1/requests/collector/${collectorId}/list/`,
+//         `http://192.168.189.119:5000/api/v1/requests/collector/${collectorId}/list/`,
 //         {
 //           headers: { Authorization: `Bearer ${token}` }
 //         }
@@ -303,7 +303,7 @@
 //     try {
 //       const token = await AsyncStorage.getItem('token');
 //       await axios.post(
-//         'http://192.168.137.246:5000/api/v1/payment/send',
+//         'http://192.168.189.119:5000/api/v1/payment/send',
 //         {
 //           requestId: request._id,
 //           homeownerId: request.homeownerId,
@@ -666,7 +666,7 @@ export default function CollectorPayment() {
       }
 
       const res = await axios.get(
-        `http://192.168.137.246:5000/api/v1/requests/collector/${collectorId}/list/`,
+        `http://192.168.189.119:5000/api/v1/requests/collector/${collectorId}/list/`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -720,7 +720,7 @@ export default function CollectorPayment() {
     try {
       const token = await AsyncStorage.getItem('token');
       await axios.post(
-        'http://192.168.137.246:5000/api/v1/payment/send',
+        'http://192.168.189.119:5000/api/v1/payment/send',
         payload, // Use the payload variable
         {
           headers: { Authorization: `Bearer ${token}` },
