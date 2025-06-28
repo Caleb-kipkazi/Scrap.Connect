@@ -118,7 +118,9 @@ import Ahistory from './Ahistory';
 import Reports from './Reports';
 import RequestDetailsScreen from './RequestDetailsScreen';
 import Collectors from './Collectors';
-import CollectorSignUp from './Csignup'; // Collector signup screen
+import CollectorSignUp from './Csignup'; 
+import AdminFeedbackScreen from './Afeedback';
+// Collector signup screen
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -136,6 +138,7 @@ function AdminTabs() {
             case 'Assign': iconName = 'send'; break;
             case 'History': iconName = 'time'; break;
             case 'Collectors': iconName = 'people'; break;
+            case 'Feedback': iconName = 'chatbubbles'; break;
             case 'Reports': iconName = 'bar-chart'; break;
           }
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -149,6 +152,7 @@ function AdminTabs() {
       <Tab.Screen name="Assign" component={Assign} />
       <Tab.Screen name="History" component={Ahistory} />
       <Tab.Screen name="Collectors" component={Collectors} />
+      <Tab.Screen name="Feedback" component={AdminFeedbackScreen} />
       <Tab.Screen name="Reports" component={Reports} />
     </Tab.Navigator>
   );
