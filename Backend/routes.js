@@ -13,6 +13,14 @@ const { resetPassword } = require("./controllers/resetPassword");
 const { getCentersByLocationForHomeowner } = require("./controllers/centerSearchController");
 const { getCenterReports, getOverallReportSummary, getCenterSummaryReport } = require("./controllers/reportController");
 const auth = require("./middleware/authMiddleware");
+// const feedbackController = require('./controllers/feedbackController');
+// const { getFeedbackByCenterId } = require('./controllers/feedbackController');
+const {
+  submitFeedback,
+  getUserCompletedUnreviewedRequest,
+  getFeedbackByCenterId
+} = require('./controllers/feedbackController');
+
 
 // Import all request controller functions
 const {
@@ -48,6 +56,7 @@ router.post('/center/signout/', centerSignout);
 router.get('/reports/center/:centerId', getCenterReports);
 router.get('/report/summary',getCenterSummaryReport);
 router.get('/report/center/summary', getCenterSummaryReport); // Assuming this is intentional duplicate or specific context
+router.get('/feedback/center/:centerId', getFeedbackByCenterId);
 
 // --- Collector Routes ---
 router.post('/collector/signup/', registerCollector);
@@ -87,6 +96,13 @@ router.post('/request/assign/', assignCollectorToRequest);
 
 // --- Center Search for Homeowners (for the request form's location picker) ---
 router.get('/centers-by-location-for-homeowner', getCentersByLocationForHomeowner);
+
+//---feedback routes---
+// router.post('/feedback/submit', feedbackController.submitFeedback);
+// router.get('/feedback/unreviewed/:userId', feedbackController.getUserCompletedUnreviewedRequest);
+router.post('/feedback/submit', submitFeedback);
+router.get('/feedback/unreviewed/:userId', getUserCompletedUnreviewedRequest);
+router.get('/feedback/center/:centerId', getFeedbackByCenterId);
 
 
 module.exports = router;
