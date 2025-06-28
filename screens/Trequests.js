@@ -1981,7 +1981,7 @@ export default function Trequests({ navigation }) {
     const fetchAdminAndRequests = useCallback(async () => {
         setLoading(true);
         try {
-            const storedToken = await AsyncStorage.getItem("adminToken");
+            const storedToken = await AsyncStorage.getItem("token");
             const storedCenterId = await AsyncStorage.getItem("centerId");
             const storedCenterName = await AsyncStorage.getItem("centerName");
 

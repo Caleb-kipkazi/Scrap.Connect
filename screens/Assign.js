@@ -1487,7 +1487,7 @@ export default function Assign() {
       setLoadingCollectors(true);
 
       try {
-        const storedAdminToken = await AsyncStorage.getItem('adminToken');
+        const storedAdminToken = await AsyncStorage.getItem('token');
         const storedCenterId = await AsyncStorage.getItem('centerId');
 
         if (!storedAdminToken || !storedCenterId) {
@@ -1600,7 +1600,7 @@ export default function Assign() {
 
     setAssigning(true); // Start individual assignment loading state
     try {
-      const storedAdminToken = await AsyncStorage.getItem('adminToken');
+      const storedAdminToken = await AsyncStorage.getItem('token');
       if (!storedAdminToken) {
         Alert.alert("Authentication Error", "Admin token not found. Please log in again.");
         setAssigning(false);

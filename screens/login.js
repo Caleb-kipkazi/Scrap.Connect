@@ -338,22 +338,34 @@
 // connection with backend
 
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const DARK_GREEN = "#004225";
+const GREEN = "#3CB371";
+const WHITE = "#FFFFFF";
+
 export default function Login({ navigation }) {
-  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState(""); // Renamed from fullName for clarity with backend
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false); // Added loading state
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      Alert.alert("Error", "Username and Password are required.");
+      return;
+    }
+
+    setLoading(true); // Set loading to true during login attempt
+
     try {
       const response = await axios.post(
         "http://192.168.189.119:5000/api/v1/user/signin/",
         {
-          username: fullName.trim().toLowerCase(), // assuming fullName is used as username
+          username: username.trim().toLowerCase(),
           password,
         },
         {
@@ -361,19 +373,25 @@ export default function Login({ navigation }) {
         }
       );
 
-      const { token, user } = response.data;
+      console.log('Homeowner Login API Response:', response.data); // Log the full response data
 
-      // Save token and user ID in AsyncStorage
+      // --- CRITICAL FIX: Destructure userId and userRole directly ---
+      const { token, userId, userRole } = response.data;
+
+      // Save token, user ID, and user role in AsyncStorage
       await AsyncStorage.setItem("token", token);
-      await AsyncStorage.setItem("userId", user.id);
+      await AsyncStorage.setItem("userId", userId); // Correctly save userId
+      await AsyncStorage.setItem("userRole", userRole); // Save the user's role
 
-      Alert.alert("Login Successful", "Welcome back!");
-      navigation.navigate("mainNavigator");
+      Alert.alert("Login Successful", `Welcome back, Homeowner ${response.data.userInfo.username}!`);
+      navigation.navigate("mainNavigator"); // Navigate to homeowner main navigator
     } catch (error) {
-      console.error(error);
+      console.error("Homeowner Login Error:", error.response?.data || error.message);
       const message =
         error.response?.data?.message || "Something went wrong during login.";
       Alert.alert("Login Failed", message);
+    } finally {
+      setLoading(false); // Always set loading to false
     }
   };
 
@@ -384,13 +402,12 @@ export default function Login({ navigation }) {
         <Text style={styles.welcome}>GOOD TO SEE YOU AGAIN HOMEOWNER.</Text>
 
         <TextInput
-          placeholder="Full Name"
+          placeholder="Username" // Changed placeholder
           placeholderTextColor="#ccc"
           style={styles.input}
-          // keyboardType="email-address"
           autoCapitalize="none"
-          value={fullName}
-          onChangeText={setFullName}
+          value={username} // Use username state
+          onChangeText={setUsername} // Set username state
         />
 
         <View style={styles.passwordContainer}>
@@ -414,21 +431,16 @@ export default function Login({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* <TouchableOpacity style={styles.signInButton} onPress={onSignIn}>
-          <Text style={styles.signInButtonText}>Sign In</Text>
-        </TouchableOpacity> */}
-
-        {/* <view>
-          <TouchableOpacity onPress={() => navigation.navigate("HomeownerDashboard")}> //this is for testing to navigate directly
-            <Text style={styles.signInButtonText}>Sign In</Text>
-          </TouchableOpacity>
-        </view> */}
-
         <TouchableOpacity
           style={styles.signInButton}
-          onPress={handleLogin} // <-- connected to backend
+          onPress={handleLogin}
+          disabled={loading} // Disable button when loading
         >
-          <Text style={styles.signInButtonText}>Sign In</Text>
+          {loading ? (
+            <ActivityIndicator color={WHITE} /> // Show loading indicator
+          ) : (
+            <Text style={styles.signInButtonText}>Sign In</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.linksContainer}>
@@ -444,10 +456,6 @@ export default function Login({ navigation }) {
     </View>
   );
 }
-
-const DARK_GREEN = "#004225";
-const GREEN = "#3CB371";
-const WHITE = "#FFFFFF";
 
 const styles = StyleSheet.create({
   container: {

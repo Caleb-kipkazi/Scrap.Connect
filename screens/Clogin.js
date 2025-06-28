@@ -927,48 +927,50 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const DARK_GREEN = "#004225";
+const GREEN = "#3CB371";
+const WHITE = "#FFFFFF";
+
 export default function CollectorLogin({ navigation }) {
-  const [fullName, setFullName] = useState(""); // This state holds the value for the username input
+  const [username, setUsername] = useState(""); // Renamed from fullName for clarity with backend
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    // FIX 1: Use 'fullName' for validation, as that's the state holding the username input
-    if (!fullName || !password) {
-      Alert.alert("Error", "Username and Password are required."); // Changed message to reflect 'username'
+    if (!username || !password) {
+      Alert.alert("Error", "Username and Password are required.");
       return;
     }
 
-    setLoading(true); // Set loading to true
+    setLoading(true);
 
     try {
-      // Corrected endpoint for collector signin
       const response = await axios.post(
-        "http://192.168.189.119:5000/api/v1/collector/signin/", // Your backend endpoint
+        "http://192.168.189.119:5000/api/v1/collector/signin/",
         {
-          // FIX 2: Send 'username' in the request body, mapping from the 'fullName' state
-          username: fullName.trim().toLowerCase(), // The backend expects 'username'
+          username: username.trim().toLowerCase(),
           password,
         },
         {
-          withCredentials: true, // Important if your backend sets cookies
+          withCredentials: true,
         }
       );
 
-      const { token, collectorInfo } = response.data; // Backend sends 'collectorInfo'
-      const collectorId = collectorInfo._id; // Get _id from collectorInfo
+      console.log('Collector Login API Response:', response.data); // Log the full response data
 
-      // Save token and collector ID in AsyncStorage
+      // --- CRITICAL FIX: Destructure collectorId and userRole directly ---
+      const { token, collectorId, userRole } = response.data;
+
+      // Save token, collector ID, and user role in AsyncStorage
       await AsyncStorage.setItem("token", token);
-      await AsyncStorage.setItem("collectorId", collectorId); // Storing collectorId
+      await AsyncStorage.setItem("collectorId", collectorId);
+      await AsyncStorage.setItem("userRole", userRole); // Save the user's role
 
       Alert.alert("Login Successful", "Welcome back, Collector!");
-      // Navigate to the appropriate dashboard for collectors
-      navigation.navigate("CmainNavigator"); // Or a specific CollectorDashboard if you have one
+      navigation.navigate("CmainNavigator"); // Navigate to collector main navigator
     } catch (error) {
-      console.error("Collector Login Error:", error);
-      // More specific error message for network vs. server errors
+      console.error("Collector Login Error:", error.response?.data || error.message);
       let message = "Something went wrong during login.";
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -981,7 +983,7 @@ export default function CollectorLogin({ navigation }) {
       }
       Alert.alert("Login Failed", message);
     } finally {
-      setLoading(false); // Set loading to false regardless of success or failure
+      setLoading(false);
     }
   };
 
@@ -992,12 +994,12 @@ export default function CollectorLogin({ navigation }) {
         <Text style={styles.welcome}>GOOD TO SEE YOU AGAIN COLLECTOR.</Text>
 
         <TextInput
-          placeholder="Username" // Changed placeholder to "Username" to reflect backend expectation
+          placeholder="Username"
           placeholderTextColor="#ccc"
           style={styles.input}
           autoCapitalize="none"
-          value={fullName} // Use fullname state as the username input
-          onChangeText={setFullName} // Set fullname state
+          value={username}
+          onChangeText={setUsername}
         />
 
         <View style={styles.passwordContainer}>
@@ -1024,10 +1026,10 @@ export default function CollectorLogin({ navigation }) {
         <TouchableOpacity
           style={styles.signInButton}
           onPress={handleLogin}
-          disabled={loading} // Disable button when loading
+          disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color={WHITE} /> // Show loading indicator
+            <ActivityIndicator color={WHITE} />
           ) : (
             <Text style={styles.signInButtonText}>Sign In</Text>
           )}
@@ -1046,10 +1048,6 @@ export default function CollectorLogin({ navigation }) {
     </View>
   );
 }
-
-const DARK_GREEN = "#004225";
-const GREEN = "#3CB371";
-const WHITE = "#FFFFFF";
 
 const styles = StyleSheet.create({
   container: {

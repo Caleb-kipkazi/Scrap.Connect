@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  SafeAreaView, // Added for better layout on different devices
-  StatusBar,    // Added for status bar styling
+  SafeAreaView,
+  StatusBar,
+  RefreshControl, // Added for pull-to-refresh
 } from 'react-native';
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons'; // Added FontAwesome5 for icons
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -22,6 +23,7 @@ const TEXT_DARK = "#333333";
 const TEXT_MUTED = "#666666";
 const BORDER_COLOR = "#E0E0E0";
 const REJECTED_RED = "#D32F2F"; // A more subtle red for rejected status
+const COLLECTED_BLUE = "#1976D2"; // A distinct color for collected tab
 const TAB_INACTIVE_BG = "#E0E0E0"; // For inactive tabs background
 const ACTIVE_BORDER = "#1B5E20"; // Darker green for active tab border
 // --- END COLOR CONSTANTS ---
@@ -31,60 +33,89 @@ const baseUrl = 'http://192.168.189.119:5000/api/v1';
 const Ahistory = () => {
   const [approvedRequests, setApprovedRequests] = useState([]);
   const [rejectedRequests, setRejectedRequests] = useState([]);
+  const [collectedRequests, setCollectedRequests] = useState([]); // New state for collected requests
   const [activeTab, setActiveTab] = useState('approved');
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // New state for pull-to-refresh
 
-  const fetchRequests = async () => {
+  // Updated fetchRequests to use 'token' and fetch collected requests
+  const fetchRequests = useCallback(async () => {
+    setLoading(true); // Set loading to true at the start of fetch
     try {
       const centerId = await AsyncStorage.getItem('centerId');
-      // Added adminToken retrieval as it's typically required for protected routes
-      // Even if your current backend setup doesn't strictly enforce it for these
-      // particular endpoints, it's good practice.
-      const adminToken = await AsyncStorage.getItem('adminToken');
+      const token = await AsyncStorage.getItem('token'); // CRITICAL FIX: Changed from 'adminToken' to 'token'
+
+      if (!token) {
+        console.warn('❌ No authentication token found for center. Cannot fetch history.');
+        // Optionally, navigate back to login here or show a persistent error
+        setLoading(false);
+        return;
+      }
 
       const config = {
         headers: {
-          Authorization: `Bearer ${adminToken}`,
+          Authorization: `Bearer ${token}`, // Use the generic 'token'
         },
       };
 
       const approvedResponse = await axios.get(`${baseUrl}/requests/center/${centerId}/list?status=approved`, config);
       const rejectedResponse = await axios.get(`${baseUrl}/requests/center/${centerId}/list?status=rejected`, config);
+      // New API call for 'collected' requests
+      const collectedResponse = await axios.get(`${baseUrl}/requests/center/${centerId}/list?status=collected`, config);
 
       setApprovedRequests(approvedResponse.data.requests || []);
       setRejectedRequests(rejectedResponse.data.requests || []);
+      setCollectedRequests(collectedResponse.data.requests || []); // Set collected requests state
+
     } catch (error) {
-      console.error('Error fetching requests:', error.message);
-      // You might want to add a state to show error messages to the user here
+      console.error('Error fetching requests:', error.response?.data || error.message);
+      Alert.alert("Fetch Error", error.response?.data?.message || "Failed to load request history.");
     } finally {
       setLoading(false);
+      setRefreshing(false); // Stop refreshing animation
     }
-  };
+  }, []); // Dependencies are empty as it doesn't depend on external state/props
 
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [fetchRequests]); // Add fetchRequests to dependencies for useCallback
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchRequests();
+  };
 
   const renderRequestRow = (req, index) => {
     if (activeTab === 'approved') {
       return (
         <View key={index} style={styles.tableRow}>
-          {/* Changed slice length for better display in limited space */}
-          <Text style={[styles.cell, { flex: 1.2 }]}>{req._id.slice(0, 8)}...</Text>
+          <Text style={[styles.cell, { flex: 1.2 }]}>{req._id.slice(-8)}</Text> {/* Show last 8 chars for brevity */}
           <Text style={[styles.cell, { flex: 1 }]}>{req.homeownerId?.username || 'N/A'}</Text>
           <Text style={[styles.cell, { flex: 1.2 }]}>{new Date(req.pickupDate).toLocaleDateString()}</Text>
           <Text style={[styles.cell, { flex: 1 }]}>{req.collectorId?.fullName || 'Not Assigned'}</Text>
         </View>
       );
-    } else {
+    } else if (activeTab === 'rejected') {
       return (
         <View key={index} style={styles.tableRow}>
-          {/* Changed slice length for better display */}
-          <Text style={[styles.cell, { flex: 1.2 }]}>{req._id.slice(0,8)}...</Text>
+          <Text style={[styles.cell, { flex: 1.2 }]}>{req._id.slice(-8)}</Text>
           <Text style={[styles.cell, { flex: 1 }]}>{req.homeownerId?.username || 'N/A'}</Text>
         </View>
       );
+    } else if (activeTab === 'collected') { // New rendering for collected requests
+      return (
+        <View key={index} style={styles.tableRow}>
+          <Text style={[styles.cell, { flex: 1 }]}>{req._id.slice(-6)}</Text> {/* Shorter ID for more space */}
+          <Text style={[styles.cell, { flex: 1.2 }]}>{req.homeownerId?.username || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1.4 }]}>{new Date(req.completedAt).toLocaleDateString() || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1.5 }]}>{req.homeownerId?.phoneNo || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1.2 }]}>{req.collectorId?.fullName || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1.5 }]}>{req.collectorId?.phoneNo || 'N/A'}</Text>
+          <Text style={[styles.cell, { flex: 1.2 }]}>Ksh {req.amountPaid?.toFixed(2) || '0.00'}</Text>
+        </View>
+      );
     }
+    return null; // Should not happen
   };
 
   const renderTableHeader = () => {
@@ -97,20 +128,49 @@ const Ahistory = () => {
           <Text style={[styles.headerCell, { flex: 1 }]}>Collector</Text>
         </View>
       );
-    } else {
+    } else if (activeTab === 'rejected') {
       return (
         <View style={[styles.tableHeader, { backgroundColor: REJECTED_RED }]}>
           <Text style={[styles.headerCell, { flex: 1.2 }]}>Req ID</Text>
           <Text style={[styles.headerCell, { flex: 1 }]}>Homeowner</Text>
         </View>
       );
+    } else if (activeTab === 'collected') { // New header for collected requests
+      return (
+        <View style={[styles.tableHeader, { backgroundColor: COLLECTED_BLUE }]}>
+          <Text style={[styles.headerCell, { flex: 1 }]}>Req ID</Text>
+          <Text style={[styles.headerCell, { flex: 1.2 }]}>Homeowner</Text>
+          <Text style={[styles.headerCell, { flex: 1.4 }]}>Completed At</Text>
+          <Text style={[styles.headerCell, { flex: 1.5 }]}>H/O Phone</Text>
+          <Text style={[styles.headerCell, { flex: 1.2 }]}>Collector</Text>
+          <Text style={[styles.headerCell, { flex: 1.5 }]}>Col Phone</Text>
+          <Text style={[styles.headerCell, { flex: 1.2 }]}>Paid (Ksh)</Text>
+        </View>
+      );
     }
+    return null;
+  };
+
+  const getCurrentRequests = () => {
+    if (activeTab === 'approved') {
+      return approvedRequests;
+    } else if (activeTab === 'rejected') {
+      return rejectedRequests;
+    } else if (activeTab === 'collected') {
+      return collectedRequests;
+    }
+    return [];
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor={LIGHT_GREY_BG} />
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={PRIMARY_GREEN} />
+        }
+      >
         <Text style={styles.mainTitle}>Request History</Text>
         <Text style={styles.subHeader}>Overview of requests handled by your center.</Text>
 
@@ -129,7 +189,7 @@ const Ahistory = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'rejected' && styles.activeTab]}
+            style={[styles.tab, activeTab === 'rejected' && styles.activeTab, { borderRightWidth: 0 }]} // No border for the middle tab
             onPress={() => setActiveTab('rejected')}
           >
             <Ionicons
@@ -140,9 +200,23 @@ const Ahistory = () => {
             />
             <Text style={[styles.tabText, activeTab === 'rejected' && styles.activeText]}>Rejected</Text>
           </TouchableOpacity>
+
+          {/* New 'Collected' tab */}
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'collected' && styles.activeTab]}
+            onPress={() => setActiveTab('collected')}
+          >
+            <FontAwesome5
+              name="box-open" // Icon for collected/completed
+              size={16}
+              color={activeTab === 'collected' ? WHITE : COLLECTED_BLUE}
+              style={styles.tabIcon}
+            />
+            <Text style={[styles.tabText, activeTab === 'collected' && styles.activeText]}>Collected</Text>
+          </TouchableOpacity>
         </View>
 
-        {loading ? (
+        {loading && !refreshing ? ( // Only show full loading indicator initially, not on refresh
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={PRIMARY_GREEN} />
             <Text style={styles.loadingText}>Loading history data...</Text>
@@ -150,13 +224,13 @@ const Ahistory = () => {
         ) : (
           <>
             {renderTableHeader()}
-            {(activeTab === 'approved' ? approvedRequests : rejectedRequests).length === 0 ? (
+            {getCurrentRequests().length === 0 ? (
               <View style={styles.emptyContainer}>
                 <Ionicons name="information-circle-outline" size={30} color={TEXT_MUTED} />
                 <Text style={styles.emptyText}>No {activeTab} requests found for your center.</Text>
               </View>
             ) : (
-              (activeTab === 'approved' ? approvedRequests : rejectedRequests).map(renderRequestRow)
+              getCurrentRequests().map(renderRequestRow)
             )}
           </>
         )}
@@ -171,18 +245,18 @@ const styles = StyleSheet.create({
     backgroundColor: LIGHT_GREY_BG,
   },
   container: {
-    padding: 20,
+    padding: 15, // Slightly reduced padding for more space
     backgroundColor: LIGHT_GREY_BG,
-    flexGrow: 1, // Ensures ScrollView takes full height
+    flexGrow: 1,
   },
-  mainTitle: { // Renamed from 'title' for clarity
+  mainTitle: {
     fontSize: 28,
     fontWeight: 'bold',
     color: PRIMARY_GREEN,
     marginBottom: 5,
     textAlign: 'center',
   },
-  subHeader: { // Added for a secondary header text
+  subHeader: {
     fontSize: 15,
     color: TEXT_MUTED,
     marginBottom: 20,
@@ -194,7 +268,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     backgroundColor: WHITE,
     borderRadius: 10,
-    overflow: 'hidden', // Ensures inner elements respect border radius
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -203,33 +277,35 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    flexDirection: 'row', // Align icon and text
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 15,
     paddingHorizontal: 10,
-    backgroundColor: WHITE, // Default background
+    backgroundColor: WHITE,
     borderBottomWidth: 3,
-    borderBottomColor: 'transparent', // Default transparent border
+    borderBottomColor: 'transparent',
+    borderRightWidth: 1, // Add border to separate tabs
+    borderRightColor: BORDER_COLOR,
   },
   activeTab: {
     backgroundColor: PRIMARY_GREEN,
-    borderBottomColor: ACTIVE_BORDER, // Darker green border for active tab
+    borderBottomColor: ACTIVE_BORDER,
   },
-  tabIcon: { // Style for the icon within the tab
+  tabIcon: {
     marginRight: 8,
   },
   tabText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: TEXT_DARK, // Default text color for inactive
+    color: TEXT_DARK,
   },
-  activeText: { // Text color for active tab
+  activeText: {
     color: WHITE,
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: PRIMARY_GREEN, // Dark green for approved header
+    backgroundColor: PRIMARY_GREEN,
     paddingVertical: 12,
     borderRadius: 8,
     marginBottom: 5,
@@ -243,18 +319,18 @@ const styles = StyleSheet.create({
     flex: 1,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: WHITE, // White text for header
-    fontSize: 14,
+    color: WHITE,
+    fontSize: 12, // Slightly smaller font for more columns
   },
   tableRow: {
     flexDirection: 'row',
     backgroundColor: WHITE,
-    paddingVertical: 14, // Increased padding for better spacing
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderColor: BORDER_COLOR,
     alignItems: 'center',
-    borderRadius: 8, // Rounded corners for rows
-    marginBottom: 5, // Small gap between rows
+    borderRadius: 8,
+    marginBottom: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -265,7 +341,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     color: TEXT_DARK,
-    fontSize: 13,
+    fontSize: 11, // Smaller font for more compact display
   },
   loadingContainer: {
     flex: 1,
@@ -278,7 +354,7 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
     marginTop: 10,
   },
-  emptyContainer: { // New style for empty state message
+  emptyContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     padding: 30,
