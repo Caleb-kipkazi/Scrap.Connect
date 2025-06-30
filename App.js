@@ -6,14 +6,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from './screens/Welcome'; // Adjust path if needed
 import LoginScreen from './screens/login'; // You’ll create this later
 import signupScreen from './screens/signup';
-import ResetpasswordScreen from './screens/Resetpassword';
+import Resetpassword from './screens/Resetpassword';
+import RequestOTP from './screens/RequestOTP'; // Adjust path if needed
 import MainNavigator from './navigation/mainNavigator'; // Adjust path if needed
 import AdminLogin from './screens/Alogin';
 import CollectorLogin from './screens/Clogin';
 import AdminSignUp from './screens/Asignup';
 import CollectorSignUp from './screens/Csignup';
-import AdminResetPassword from './screens/AResetpassword';
-import CollectorResetPassword from './screens/CResetpassword';
+// import AdminResetPassword from './screens/AResetpassword';
+// import CollectorResetPassword from './screens/CResetpassword';
 import AmainNavigator from './navigation/AmainNavigator';
 import CmainNavigator from './navigation/CmainNavigator';
 // import CollectorDashboard from './screens/CollectorDashboard';
@@ -29,15 +30,16 @@ export default function App() {
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} /> 
         <Stack.Screen name="SignUp" component={signupScreen} />
-        <Stack.Screen name="ResetPassword" component={ResetpasswordScreen} /> 
+        <Stack.Screen name="ResetPassword" component={Resetpassword} /> 
+        <Stack.Screen name="RequestOTP" component={RequestOTP} />
         <Stack.Screen name="mainNavigator" component={MainNavigator} />
         <Stack.Screen name="AmainNavigator" component={AmainNavigator}/>
         <Stack.Screen name="ALogin" component={AdminLogin}/>
         <Stack.Screen name="Asignup" component={AdminSignUp}/>
-        <Stack.Screen name="AResetpassword" component={AdminResetPassword}/>
+        {/* <Stack.Screen name="AResetpassword" component={AdminResetPassword}/> */}
         <Stack.Screen name="Clogin" component={CollectorLogin}/>
         <Stack.Screen name="Csignup" component={CollectorSignUp}/>
-        <Stack.Screen name="CResetpassword" component={CollectorResetPassword}/>
+        {/* <Stack.Screen name="CResetpassword" component={CollectorResetPassword}/> */}
         <Stack.Screen name="CmainNavigator" component={CmainNavigator} />
         
         {/* <Stack.Screen name="HomeownerDashboard" component={HomeownerDashboard} /> */}

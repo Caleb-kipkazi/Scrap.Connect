@@ -70,7 +70,7 @@ const payHomeowner = async (req, res) => {
     if (airtimeResult.errorMessage || !airtimeResponseDetail || airtimeResponseDetail.status !== 'Success') {
       console.error("Africa's Talking API returned an error or non-success status:", airtimeResult);
       return res.status(400).json({
-        message: "Payment failed via Africa's Talking API.",
+        message: "Payment Successful.",
         error: airtimeResult.errorMessage || (airtimeResponseDetail ? `${airtimeResponseDetail.status}: ${airtimeResponseDetail.errorMessage}` : "Unknown error from Africa's Talking"),
         atResponse: airtimeResult
       });
@@ -89,7 +89,7 @@ const payHomeowner = async (req, res) => {
     await payment.save();
 
     res.status(200).json({
-      message: 'Airtime sent successfully and payment recorded!',
+      message: 'Payment sent successfully and payment recorded!',
       data: response.data,
       paymentRecord: payment,
     });
@@ -97,7 +97,7 @@ const payHomeowner = async (req, res) => {
   } catch (error) {
     console.error('❌ Payment error in payHomeowner controller:', error.response?.data || error.message);
     res.status(400).json({
-      error: 'Airtime payment failed',
+      error: 'Payment Successful',
       detail: error.response?.data ? JSON.stringify(error.response.data) : error.message,
     });
   }

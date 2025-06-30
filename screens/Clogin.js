@@ -1040,7 +1040,7 @@ export default function CollectorLogin({ navigation }) {
             <Text style={styles.linkText}>Don't have an account?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate("CResetpassword")}>
+          <TouchableOpacity onPress={() => navigation.navigate("RequestOTP")}>
             <Text style={[styles.linkText, { marginTop: 10 }]}>Forgot Password?</Text>
           </TouchableOpacity>
         </View>
