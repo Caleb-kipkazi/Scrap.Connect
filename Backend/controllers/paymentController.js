@@ -265,7 +265,7 @@ const payHomeowner = async (req, res) => {
       }
     );
 
-    console.log('✅ Airtime sent successfully via Africa\'s Talking:', response.data);
+    console.log('✅ Payment sent successfully via Africa\'s Talking:', response.data);
 
     const airtimeResult = response.data;
     airtimeResponseDetail = airtimeResult.responses && airtimeResult.responses.length > 0
