@@ -1,3 +1,4 @@
+// models/paymentModel.js
 const mongoose = require('mongoose');
 
 const paymentSchema = new mongoose.Schema({
@@ -8,7 +9,7 @@ const paymentSchema = new mongoose.Schema({
   },
   collectorId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Collector',
     required: true
   },
   homeownerId: {
@@ -21,6 +22,14 @@ const paymentSchema = new mongoose.Schema({
     required: true
   },
   phoneNumber: {
+    type: String,
+    required: true
+  },
+  transactionId: {           // Africa’s Talking transaction ID
+    type: String,
+    required: true
+  },
+  status: {                  // e.g. "Success"
     type: String,
     required: true
   },
