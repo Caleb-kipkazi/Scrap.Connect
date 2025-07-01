@@ -400,7 +400,7 @@
 //     try {
 //       // Corrected endpoint for collector signin
 //       const response = await axios.post(
-//         "http://192.168.189.119:5000/api/v1/collector/signin/", // <-- CORRECTED ENDPOINT
+//         "http://192.168.1.5:5000/api/v1/collector/signin/", // <-- CORRECTED ENDPOINT
 //         {
 //           fullName: fullName.trim().toLowerCase(), // Use the username state directly
 //           password,
@@ -728,7 +728,7 @@
 //     try {
 //       // Corrected endpoint for collector signin
 //       const response = await axios.post(
-//         "http://192.168.189.119:5000/api/v1/collector/signin/", // Your backend endpoint
+//         "http://192.168.1.5:5000/api/v1/collector/signin/", // Your backend endpoint
 //         {
 //           // FIX 2: Send 'username' in the request body, mapping from the 'fullName' state
 //           username: fullName.trim().toLowerCase(), // The backend expects 'username'
@@ -947,7 +947,7 @@ export default function CollectorLogin({ navigation }) {
 
     try {
       const response = await axios.post(
-        "http://192.168.189.119:5000/api/v1/collector/signin/",
+        "http://192.168.1.5:5000/api/v1/collector/signin/",
         {
           username: username.trim().toLowerCase(),
           password,

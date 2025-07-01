@@ -30,7 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { FontAwesome5 } from '@expo/vector-icons';
 
-const BASE_URL = 'http://192.168.189.119:5000/api/v1';
+const BASE_URL = 'http://192.168.1.5:5000/api/v1';
 
 export default function Rewards() {
   const [collectedRequests, setCollectedRequests] = useState([]);

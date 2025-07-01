@@ -292,7 +292,7 @@ const Feedback = () => {
   const fetchUnreviewedRequest = async (id) => {
     try {
       setLoading(true); // Ensure loading is true when fetching
-      const response = await axios.get(`http://192.168.189.119:5000/api/v1/feedback/unreviewed/${id}`);
+      const response = await axios.get(`http://192.168.1.5:5000/api/v1/feedback/unreviewed/${id}`);
       console.log('Unreviewed request response:', response.data);
       setRequest(response.data.request);
     } catch (err) {
@@ -364,7 +364,7 @@ const Feedback = () => {
     console.log('Submitting feedback payload:', payload);
 
     try {
-      const res = await axios.post(`http://192.168.189.119:5000/api/v1/feedback/submit`, payload);
+      const res = await axios.post(`http://192.168.1.5:5000/api/v1/feedback/submit`, payload);
       console.log('Feedback submission success:', res.data);
       Alert.alert('Success', 'Feedback submitted successfully!');
       setRequest(null); // Clear the request after successful submission

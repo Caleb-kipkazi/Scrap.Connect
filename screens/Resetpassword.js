@@ -35,7 +35,7 @@ export default function ResetPassword({ navigation }) {
 
     try {
       // Updated backend API URL
-      const response = await fetch('http://192.168.189.119:5000/api/v1/auth/resetPassword', { //
+      const response = await fetch('http://192.168.1.5:5000/api/v1/auth/resetPassword', { //
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

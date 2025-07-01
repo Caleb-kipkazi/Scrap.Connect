@@ -14,7 +14,7 @@ export default function RequestOTP({ navigation }) {
 
     try {
       // Updated backend API URL
-      const response = await fetch('http://192.168.189.119:5000/api/v1/auth/requestOTP', { //
+      const response = await fetch('http://192.168.1.5:5000/api/v1/auth/requestOTP', { //
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

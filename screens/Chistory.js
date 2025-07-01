@@ -233,7 +233,7 @@ export default function Chistory() {
 
         // 1️⃣ fetch all requests assigned to this collector
         const reqRes = await axios.get(
-          `http://192.168.189.119:5000/api/v1/collector/requests/${collectorId}/`,
+          `http://192.168.1.5:5000/api/v1/collector/requests/${collectorId}/`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const all = reqRes.data.requests || [];
@@ -244,7 +244,7 @@ export default function Chistory() {
 
         // 2️⃣ fetch payment history
         const payRes = await axios.get(
-          `http://192.168.189.119:5000/api/v1/payments/collector/${collectorId}`,
+          `http://192.168.1.5:5000/api/v1/payments/collector/${collectorId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setPaymentHistory(payRes.data.payments || []);

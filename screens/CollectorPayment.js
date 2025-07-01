@@ -258,7 +258,7 @@
 // // //       }
 
 // // //       const res = await axios.get(
-// // //         `http://192.168.189.119:5000/api/v1/requests/collector/${collectorId}/list/`,
+// // //         `http://192.168.1.5:5000/api/v1/requests/collector/${collectorId}/list/`,
 // // //         {
 // // //           headers: { Authorization: `Bearer ${token}` }
 // // //         }
@@ -303,7 +303,7 @@
 // // //     try {
 // // //       const token = await AsyncStorage.getItem('token');
 // // //       await axios.post(
-// // //         'http://192.168.189.119:5000/api/v1/payment/send',
+// // //         'http://192.168.1.5:5000/api/v1/payment/send',
 // // //         {
 // // //           requestId: request._id,
 // // //           homeownerId: request.homeownerId,
@@ -631,7 +631,7 @@
 // //         return;
 // //       }
 
-// //       const response = await axios.get(`http://192.168.189.119:5000/api/v1/request/assigned/${collectorId}`, {
+// //       const response = await axios.get(`http://192.168.1.5:5000/api/v1/request/assigned/${collectorId}`, {
 // //         headers: {
 // //           Authorization: `Bearer ${token}`,
 // //         },
@@ -790,7 +790,7 @@
 //         return;
 //       }
 
-//       const res = await axios.get('http://192.168.189.119:5000/api/v1/collector/info', {
+//       const res = await axios.get('http://192.168.1.5:5000/api/v1/collector/info', {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
 //         },
@@ -914,7 +914,7 @@
 //       }
 
 //       const res = await axios.get(
-//         `http://192.168.189.119:5000/api/v1/requests/collector/${collectorId}/list/`,
+//         `http://192.168.1.5:5000/api/v1/requests/collector/${collectorId}/list/`,
 //         {
 //           headers: { Authorization: `Bearer ${token}` }
 //         }
@@ -990,7 +990,7 @@
 //     try {
 //       const token = await AsyncStorage.getItem('token');
 //       await axios.post(
-//         'http://192.168.189.119:5000/api/v1/payment/send',
+//         'http://192.168.1.5:5000/api/v1/payment/send',
 //         payload, // Use the payload variable
 //         {
 //           headers: { Authorization: `Bearer ${token}` },
@@ -1340,7 +1340,7 @@
 //         const collectorId = await AsyncStorage.getItem('collectorId');
 
 //         const res = await axios.get(
-//           `http://192.168.189.119:5000/api/v1/requests/collector/${collectorId}/list/`,
+//           `http://192.168.1.5:5000/api/v1/requests/collector/${collectorId}/list/`,
 //           { headers: { Authorization: `Bearer ${token}` } }
 //         );
 
@@ -1375,7 +1375,7 @@
 //     try {
 //       const token = await AsyncStorage.getItem('token');
 //       await axios.post(
-//         'http://192.168.189.119:5000/api/v1/payment/send',
+//         'http://192.168.1.5:5000/api/v1/payment/send',
 //         {
 //           requestId: request._id,
 //           homeownerId: request.homeownerId,
@@ -1588,7 +1588,7 @@ const Colors = {
 // Define your backend base URL. Consistency is key!
 // **IMPORTANT**: Ensure this IP address matches your actual backend server IP.
 // If your backend is at 192.168.0.114, change this.
-const BASE_URL = 'http://192.168.189.119:5000/api/v1'; // Check if this IP is correct for your backend
+const BASE_URL = 'http://192.168.1.5:5000/api/v1'; // Check if this IP is correct for your backend
 
 export default function CollectorPayment() {
   const [collectedRequests, setCollectedRequests] = useState([]);

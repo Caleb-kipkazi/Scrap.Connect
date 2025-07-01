@@ -74,7 +74,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["http://localhost:8081", "http://192.168.189.119:8081"],
+    origin: ["http://localhost:8081", "http://192.168.1.5:8081"],
     credentials: true,
   })
 );
@@ -112,8 +112,8 @@ mongoose.connection.on("disconnected",()=>{
 });
 
 //run server
-const server = app.listen(PORT, "192.168.189.119", () => {
-  console.log(`Server is running on http://192.168.189.119:${PORT}`);
+const server = app.listen(PORT, "192.168.1.5", () => {
+  console.log(`Server is running on http://192.168.1.5:${PORT}`);
 });
 
 

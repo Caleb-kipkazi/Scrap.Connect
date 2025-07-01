@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 // Screens
-import Chome from './Chome';
+// import Chome from './Chome';
 import Pickups from './Pickups';
 import Chistory from './Chistory';
 import CollectorPayment from './CollectorPayment';
@@ -40,21 +40,21 @@ function CollectorTabs() {
 
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Pickups" // Changed to 'pickups' as per your request
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           let animValue;
 
           switch (route.name) {
-            case 'Home':
-              iconName = focused ? 'home' : 'home-outline';
-              animValue = homeIconAnim;
-              break;
             case 'Pickups':
               iconName = focused ? 'cube' : 'cube-outline'; // Changed to cube for pickups
               animValue = pickupsIconAnim;
               break;
+            // case 'Pickups':
+            //   iconName = focused ? 'cube' : 'cube-outline'; // Changed to cube for pickups
+            //   animValue = pickupsIconAnim;
+            //   break;
             case 'Pay':
               iconName = focused ? 'wallet' : 'wallet-outline'; // Changed to wallet for pay
               animValue = payIconAnim;
@@ -83,7 +83,7 @@ function CollectorTabs() {
         tabBarHideOnKeyboard: true,
       })}
     >
-      <Tab.Screen name="Home" component={Chome} />
+      {/* <Tab.Screen name="Home" component={Chome} /> */}
       <Tab.Screen name="Pickups" component={Pickups} />
       <Tab.Screen name="Pay" component={CollectorPayment} />
       <Tab.Screen name="History" component={Chistory} />

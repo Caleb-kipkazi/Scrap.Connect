@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 // Define a base URL for your API
-const API_BASE_URL = 'http://192.168.189.119:5000/api/v1';
+const API_BASE_URL = 'http://192.168.1.5:5000/api/v1';
 
 // Define a color palette for consistent styling
 const Colors = {
