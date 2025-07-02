@@ -373,9 +373,46 @@ async function getPaymentsByHomeowner(req, res) {
         res.status(500).json({ message: "Failed to fetch payments", error: error.message });
     }
 }
+  
+
+// Record collector's Paystack payment (MPESA)
+const recordCollectorPaymentViaPaystack = async (req, res) => {
+  try {
+    const { requestId, collectorId, phoneNo, amount, reference } = req.body;
+
+    if (!requestId || !collectorId || !phoneNo || !amount || !reference) {
+      return res.status(400).json({ error: 'Missing required fields for payment recording.' });
+    }
+
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ error: 'Amount must be a positive number.' });
+    }
+
+    const payment = new Payment({
+      requestId,
+      collectorId,
+      phoneNo,
+      amount: parsedAmount,
+      reference,
+      paymentDate: new Date()
+    });
+
+    await payment.save();
+
+    res.status(201).json({
+      message: 'Payment recorded successfully via Paystack!',
+      payment
+    });
+  } catch (error) {
+    console.error('Error saving Paystack payment:', error.message);
+    res.status(500).json({ error: 'Server error saving Paystack payment.' });
+  }
+};
 
 module.exports = {
   payHomeowner,
   getPaymentsByCollector,
   getPaymentsByHomeowner,
+  recordCollectorPaymentViaPaystack,
 };

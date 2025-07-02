@@ -1448,6 +1448,7 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  RefreshControl, // Import RefreshControl
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
@@ -1474,92 +1475,99 @@ export default function Assign() {
   const [loadingRequests, setLoadingRequests] = useState(true);
   const [loadingCollectors, setLoadingCollectors] = useState(true);
   const [assigning, setAssigning] = useState(false); // State for individual assignment loading
+  const [refreshing, setRefreshing] = useState(false); // State for pull-to-refresh
 
   const [adminCenterId, setAdminCenterId] = useState(null); // ID of the logged-in admin's center
   const [centerCollectors, setCenterCollectors] = useState([]); // List of collectors from the admin's center
   const [error, setError] = useState(null); // General error for data fetching
 
   // --- Data Fetching Logic ---
-  useEffect(() => {
-    const loadAdminDashboardData = async () => {
-      setError(null); // Clear previous errors
-      setLoadingRequests(true);
-      setLoadingCollectors(true);
+  // Wrap your data loading logic in a useCallback for refresh control
+  const loadAdminDashboardData = useCallback(async () => {
+    setError(null); // Clear previous errors
+    setLoadingRequests(true);
+    setLoadingCollectors(true);
+    setRefreshing(true); // Start refreshing indicator
 
-      try {
-        const storedAdminToken = await AsyncStorage.getItem('token');
-        const storedCenterId = await AsyncStorage.getItem('centerId');
+    try {
+      const storedAdminToken = await AsyncStorage.getItem('token');
+      const storedCenterId = await AsyncStorage.getItem('centerId');
 
-        if (!storedAdminToken || !storedCenterId) {
-          setError("Authentication required. Please log in as a center admin.");
-          setLoadingRequests(false);
-          setLoadingCollectors(false);
-          return;
-        }
-
-        setAdminCenterId(storedCenterId);
-
-        // 1. Fetch Approved Requests for this Center
-        try {
-          const requestsResponse = await axios.get(
-            `${BACKEND_URL}/api/v1/requests/center/${storedCenterId}/list?status=approved`,
-            { headers: { Authorization: `Bearer ${storedAdminToken}` } }
-          );
-
-          if (requestsResponse.data.success) {
-            const fetchedRequests = requestsResponse.data.requests;
-            setApprovedRequests(fetchedRequests);
-            setFilteredRequests(fetchedRequests);
-
-            // Initialize collectorMap from fetched data if a collector is already assigned
-            const initialCollectorMap = {};
-            fetchedRequests.forEach(req => {
-              // Ensure collectorId and collectorId._id exist
-              if (req.collectorId && req.collectorId._id) {
-                initialCollectorMap[req._id] = req.collectorId._id;
-              }
-            });
-            setCollectorMap(initialCollectorMap);
-          } else {
-            setError(requestsResponse.data.message || "Failed to fetch approved requests.");
-          }
-        } catch (err) {
-          console.error("Error fetching requests:", err);
-          setError(err.response?.data?.message || "Failed to load approved requests.");
-        } finally {
-          setLoadingRequests(false);
-        }
-
-        // 2. Fetch Collectors for this Center
-        try {
-          const collectorsResponse = await axios.get(
-            `${BACKEND_URL}/api/v1/center/collectors/${storedCenterId}`,
-            { headers: { Authorization: `Bearer ${storedAdminToken}` } }
-          );
-
-          if (collectorsResponse.data.success) {
-            setCenterCollectors(collectorsResponse.data.collectors);
-          } else {
-            setError(collectorsResponse.data.message || "Failed to fetch collectors.");
-          }
-        } catch (err) {
-          console.error("Error fetching collectors:", err);
-          setError(err.response?.data?.message || "Failed to load collectors for this center.");
-        } finally {
-          setLoadingCollectors(false);
-        }
-
-      } catch (err) {
-        // This catch block handles errors related to AsyncStorage or initial setup
-        console.error("Critical error loading admin data:", err);
-        setError("Could not load admin data. Please ensure the app has storage permissions or you are logged in.");
+      if (!storedAdminToken || !storedCenterId) {
+        setError("Authentication required. Please log in as a center admin.");
         setLoadingRequests(false);
         setLoadingCollectors(false);
+        setRefreshing(false);
+        return;
       }
-    };
 
+      setAdminCenterId(storedCenterId);
+
+      // 1. Fetch Approved Requests for this Center
+      try {
+        const requestsResponse = await axios.get(
+          `${BACKEND_URL}/api/v1/requests/center/${storedCenterId}/list?status=approved`,
+          { headers: { Authorization: `Bearer ${storedAdminToken}` } }
+        );
+
+        if (requestsResponse.data.success) {
+          const fetchedRequests = requestsResponse.data.requests;
+          setApprovedRequests(fetchedRequests);
+          setFilteredRequests(fetchedRequests);
+
+          // Initialize collectorMap from fetched data if a collector is already assigned
+          const initialCollectorMap = {};
+          fetchedRequests.forEach(req => {
+            // Ensure collectorId and collectorId._id exist
+            if (req.collectorId && req.collectorId._id) {
+              initialCollectorMap[req._id] = req.collectorId._id;
+            }
+          });
+          setCollectorMap(initialCollectorMap);
+        } else {
+          setError(requestsResponse.data.message || "Failed to fetch approved requests.");
+        }
+      } catch (err) {
+        console.error("Error fetching requests:", err);
+        setError(err.response?.data?.message || "Failed to load approved requests.");
+      } finally {
+        setLoadingRequests(false);
+      }
+
+      // 2. Fetch Collectors for this Center
+      try {
+        const collectorsResponse = await axios.get(
+          `${BACKEND_URL}/api/v1/center/collectors/${storedCenterId}`,
+          { headers: { Authorization: `Bearer ${storedAdminToken}` } }
+        );
+
+        if (collectorsResponse.data.success) {
+          setCenterCollectors(collectorsResponse.data.collectors);
+        } else {
+          setError(collectorsResponse.data.message || "Failed to fetch collectors.");
+        }
+      } catch (err) {
+        console.error("Error fetching collectors:", err);
+        setError(err.response?.data?.message || "Failed to load collectors for this center.");
+      } finally {
+        setLoadingCollectors(false);
+      }
+
+    } catch (err) {
+      // This catch block handles errors related to AsyncStorage or initial setup
+      console.error("Critical error loading admin data:", err);
+      setError("Could not load admin data. Please ensure the app has storage permissions or you are logged in.");
+      setLoadingRequests(false);
+      setLoadingCollectors(false);
+    } finally {
+      setRefreshing(false); // Stop refreshing indicator regardless of success or failure
+    }
+  }, []); // Empty dependency array as loadAdminDashboardData doesn't depend on external props/state
+
+  useEffect(() => {
     loadAdminDashboardData();
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, [loadAdminDashboardData]); // Depend on loadAdminDashboardData to re-run when it changes (though it's memoized)
+
 
   // --- Search Functionality ---
   const handleSearch = (query) => {
@@ -1772,8 +1780,11 @@ export default function Assign() {
           <View style={styles.errorContainer}>
             <Ionicons name="alert-circle-outline" size={50} color="red" />
             <Text style={styles.errorText}>{error}</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={() => Alert.alert('Refresh', 'Refreshing data...')}>
-                <Text style={styles.retryButtonText}>Refresh</Text>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={loadAdminDashboardData} // Use the useCallback function for retry
+            >
+              <Text style={styles.retryButtonText}>Refresh</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -1788,6 +1799,16 @@ export default function Assign() {
                 <Text style={styles.emptyText}>No approved requests available for assignment.</Text>
               </View>
             }
+            // --- Pull-to-Refresh Integration ---
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={loadAdminDashboardData} // Call the same function for refreshing
+                tintColor="#4CAF50" // Color of the refresh indicator on iOS
+                colors={["#4CAF50"]} // Colors of the refresh indicator on Android
+              />
+            }
+            // --- End Pull-to-Refresh Integration ---
           />
         )}
 

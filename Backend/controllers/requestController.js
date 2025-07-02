@@ -777,7 +777,7 @@ const createRequest = async (req, res) => {
     // SMS Notification for Center Admin
     // Assuming center.phoneNo is like 722920813
     const centerPhoneNumber = formatPhoneNumber(center.phoneNo);
-    const adminMessage = `New scrap request from ${user.username} (Phone: ${user.phoneNo}) for ${scrapType} in ${location}. Please check your ScrapConnect dashboard.`;
+    const adminMessage = `Hello,New scrap request from ${user.username} (Phone: ${user.phoneNo}) for ${scrapType} in ${location}. Please check your ScrapConnect dashboard.`;
     await sendSMS(centerPhoneNumber, adminMessage);
 
     res.status(201).json({
@@ -829,13 +829,13 @@ const assignCollectorToRequest = async (req, res) => {
     // SMS Notification for Collector
     // Assuming populatedRequest.collectorId.phoneNo is like 722920813
     const collectorPhoneNumber = formatPhoneNumber(populatedRequest.collectorId.phoneNo);
-    const collectorMessage = `You have been assigned a new scrap collection request. Please check your ScrapConnect account for details.`;
+    const collectorMessage = `Hello,You have been assigned a new scrap collection request. Please check your ScrapConnect account for details.`;
     await sendSMS(collectorPhoneNumber, collectorMessage);
 
     // SMS Notification for Homeowner
     // Assuming populatedRequest.homeownerId.phoneNo is like 722920813
     const homeownerPhoneNumber = formatPhoneNumber(populatedRequest.homeownerId.phoneNo);
-    const homeownerMessage = `Your scrap collection request (ID: ${requestId.substring(0, 8)}...) has been approved and assigned to a collector. Kindly check your ScrapConnect account for details.`;
+    const homeownerMessage = `Congratulations,Your scrap collection request (ID: ${requestId.substring(0, 8)}...) has been approved and assigned to a collector. Kindly check your ScrapConnect account for details.`;
     await sendSMS(homeownerPhoneNumber, homeownerMessage);
 
     res.status(200).json({
