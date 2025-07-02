@@ -237,6 +237,7 @@ const {
     updateRequestStatus,
     getUserInfo
 } = require("./controllers/requestController");
+const { paystackInit, verifyPayment } = require("./controllers/paystack");
 
 // Import payment controller functions.
 // We will use the 'paymentController' alias for all of them.
@@ -262,6 +263,10 @@ router.get('/feedback/center/:centerId', getFeedbackByCenterId);
 
 // NEW: Additional route from ROUTER 2 for getting all center requests (with ROUTER 1's trailing slash)
 router.get("/center/requests/:centerId/", getAllCenterRequests);
+
+// paystack
+router.post("/paystack/Init/", paystackInit);
+router.post("/paystack/verify/:reference", verifyPayment);
 
 
 // --- Collector Routes ---

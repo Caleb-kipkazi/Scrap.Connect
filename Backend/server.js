@@ -55,7 +55,7 @@
 // server.on("error",(err)=>{
 //     console.log("Server error",err.message)
 // })
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 require ("dotenv").config();
 const express = require("express");
@@ -112,8 +112,8 @@ mongoose.connection.on("disconnected",()=>{
 });
 
 //run server
-const server = app.listen(PORT, "192.168.1.5", () => {
-  console.log(`Server is running on http://192.168.1.5:${PORT}`);
+const server = app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is running on Port ${PORT}`);
 });
 
 

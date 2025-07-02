@@ -3476,9 +3476,15 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import Paystack from 'react-native-paystack-webview'; // Corrected import for Paystack
+import Paystack from 'react-native-paystack-webview' // Corrected import for Paystack
 import * as Print from 'expo-print'; // For PDF generation
 import * as Sharing from 'expo-sharing'; // For sharing files
+
+
+
+// import {webView} from 'react-native-webview'; // Ensure you have this import if using WebView
+// import {  PaystackWebView, } from 'react-native-paystack-webview'; // Corrected import for Paystack WebView
+
 
 // Define a color palette for a cleaner look
 const Colors = {
@@ -3495,9 +3501,6 @@ const Colors = {
   gradientStart: '#28a745', // For button gradients
   gradientEnd: '#218838', // For button gradients
 };
-
-// Paystack Configuration - REPLACE WITH YOUR ACTUAL LIVE PUBLIC KEY
-const PAYSTACK_PUBLIC_KEY = 'pk_live_449a9e18a700f873b10fead7ddcb96c1fae5f83f'; // Use your actual Paystack Public Key!
 
 // Define your backend base URL. Consistency is key!
 // **IMPORTANT**: Ensure this IP address matches your actual backend server IP.
@@ -3572,8 +3575,9 @@ export default function CollectorPayment() {
 
   const handlePay = async (request) => {
     const data = inputs[request._id];
-    if (!data || !data.phone || !data.amount || !request.homeownerId || !request.homeownerEmail) { // Ensure email is available
-      return Alert.alert('Missing Fields', 'Enter phone, amount, and ensure homeowner email is available for payment.');
+    // Removed homeownerEmail from the required fields check
+    if (!data || !data.phone || !data.amount || !request.homeownerId) {
+      return Alert.alert('Missing Fields', 'Enter phone, amount, and ensure homeowner ID is available for payment.');
     }
 
     const amountNum = parseFloat(data.amount);
@@ -3587,26 +3591,17 @@ export default function CollectorPayment() {
 
       // 1. Call your backend to initialize the Paystack transaction
       const initResponse = await axios.post(
-        `${BASE_URL}/payments/initialize`,
+        `${BASE_URL}/paystack/Init`, // Use your Paystack initialization route
         {
-          requestId: request._id,
-          collectorId: collectorId,
-          homeownerId: request.homeownerId, // Ensure this ID is available from your request object
-          amount: amountNum,
-          customerEmail: request.homeownerEmail, // Ensure homeowner's email is passed
-          customerPhone: data.phone,
-          metadata: { // Custom metadata to pass through to Paystack and retrieve on verification
-            scrapType: request.scrapType,
-            weight: request.weight,
-            homeownerName: request.homeownerName // Example metadata
-          }
+          email: 'customer@example.com', // Using a placeholder email
+          amount: amountNum, // Amount in KES (your backend will multiply by 100 for kobo/cents)
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      const { authorization_url, reference } = initResponse.data.data;
+      const { authorization_url, reference } = initResponse.data; // Assuming your backend returns data directly
 
       // Store current payment data for Paystack WebView and verification
       setCurrentPaymentData({
@@ -3615,7 +3610,7 @@ export default function CollectorPayment() {
         collectorId: collectorId,
         homeownerId: request.homeownerId,
         amount: amountNum,
-        customerEmail: request.homeownerEmail,
+        customerEmail: 'customer@example.com', // Store placeholder email for consistency
         customerPhone: data.phone,
       });
 
@@ -3624,7 +3619,7 @@ export default function CollectorPayment() {
 
     } catch (error) {
       console.error('Error initiating payment:', error.response ? error.response.data : error.message);
-      Alert.alert('Payment Error', error.response?.data?.message || 'Failed to initiate payment.');
+      Alert.alert('Payment Error', error.response?.data?.error || 'Failed to initiate payment.');
     }
   };
 
@@ -3640,14 +3635,14 @@ export default function CollectorPayment() {
     try {
       const token = await AsyncStorage.getItem('token');
       const verifyResponse = await axios.post(
-        `${BASE_URL}/payments/verify`,
-        { reference: transactionRef },
+        `${BASE_URL}/paystack/verify/${transactionRef}`, // Use your Paystack verification route
+        {}, // Verification typically doesn't need a body, reference is in URL
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      if (verifyResponse.data.payment.status === 'success') {
+      if (verifyResponse.data.message === 'Payment verified') { // Check the message from your paystack.js
         Alert.alert('Payment Successful', 'Payment has been successfully processed and recorded.');
         onRefresh(); // Refresh the list of requests
       } else {
@@ -3656,7 +3651,7 @@ export default function CollectorPayment() {
 
     } catch (error) {
       console.error('Error verifying payment:', error.response ? error.response.data : error.message);
-      Alert.alert('Verification Error', error.response?.data?.message || 'Failed to verify payment with backend.');
+      Alert.alert('Verification Error', error.response?.data?.error || 'Failed to verify payment with backend.');
     }
   };
 
@@ -3666,33 +3661,102 @@ export default function CollectorPayment() {
   };
 
   const handleDownloadReceipt = async (request) => {
-    // You would typically fetch the receipt from your backend as a PDF or HTML
-    // For demonstration, let's create a simple HTML receipt
-    const receiptHtml = `
-      <h1>Payment Receipt</h1>
-      <p><strong>Request ID:</strong> ${request._id}</p>
-      <p><strong>Homeowner:</strong> ${request.homeownerName}</p>
-      <p><strong>Collector:</strong> ${request.collectorName || 'N/A'}</p>
-      <p><strong>Amount Paid:</strong> KES ${inputs[request._id]?.amount || 'N/A'}</p>
-      <p><strong>Scrap Type:</strong> ${request.scrapType}</p>
-      <p><strong>Weight:</strong> ${request.weight} kg</p>
-      <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
-      <p>Thank you for your payment!</p>
+    const receiptData = inputs[request._id] || {};
+    const paymentAmount = receiptData.amount || '';
+    const paidPhoneNumber = receiptData.phone || request.homeownerId?.phoneNo || request.phoneNumber || '';
+
+    // Check if required data is available for a meaningful receipt
+    if (!paymentAmount || !paidPhoneNumber) {
+        Alert.alert('Missing Data', 'Please ensure amount and phone number are entered for the receipt.');
+        return;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+        <style>
+          body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 20px; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 25px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+          .header { text-align: center; margin-bottom: 25px; }
+          .header h1 { color: #28a745; margin: 0; font-size: 28px; }
+          .header p { color: #6c757d; font-size: 14px; margin-top: 5px; }
+          .receipt-details { margin-bottom: 25px; border-top: 1px dashed #ddd; padding-top: 20px; }
+          .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+          .detail-label { font-weight: bold; width: 40%; }
+          .detail-value { width: 60%; text-align: right; }
+          .total { border-top: 2px solid #28a745; padding-top: 15px; margin-top: 20px; }
+          .total .detail-label { font-size: 18px; }
+          .total .detail-value { font-size: 18px; font-weight: bold; color: #28a745; }
+          .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #6c757d; }
+          .footer p { margin-bottom: 5px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Scrap Connect</h1>
+            <p>Official Payment Receipt</p>
+            <p>Date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+          <div class="receipt-details">
+            <div class="detail-row">
+              <span class="detail-label">Homeowner Name:</span>
+              <span class="detail-value">${request.homeownerName || 'N/A'}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Homeowner ID:</span>
+              <span class="detail-value">${request.homeownerId || 'N/A'}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Payment Phone:</span>
+              <span class="detail-value">${paidPhoneNumber}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Request ID:</span>
+              <span class="detail-value">${request._id}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Scrap Type:</span>
+              <span class="detail-value">${request.scrapType || 'N/A'}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Weight:</span>
+              <span class="detail-value">${request.weight ? `${request.weight} kg` : 'N/A'}</span>
+            </div>
+          </div>
+          <div class="total">
+            <div class="detail-row">
+              <span class="detail-label">Amount Paid:</span>
+              <span class="detail-value">KES ${parseFloat(paymentAmount).toFixed(2)}</span>
+            </div>
+          </div>
+          <div class="footer">
+            <p>Thank you for using Scrap Connect!</p>
+            <p>This is an electronically generated receipt and does not require a signature.</p>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
 
     try {
-      const { uri } = await Print.printToFileAsync({ html: receiptHtml });
-      if (Platform.OS === 'ios') {
-        await Sharing.shareAsync(uri);
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      if (uri) {
+        // Check if sharing is available on the device
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+        } else {
+          Alert.alert('Sharing Not Available', 'PDF generated, but sharing is not available on this device.');
+          console.log('PDF saved to:', uri); // Log URI for debugging on devices without sharing
+        }
       } else {
-        // For Android, you might need to save it to a temporary directory first
-        Alert.alert('Receipt Generated', `Receipt saved to: ${uri}. You can share it now.`);
-        // You might need a more robust solution for saving and sharing on Android
-        // depending on file system permissions and user experience requirements.
+          Alert.alert('Error', 'Failed to generate PDF.');
       }
     } catch (error) {
-      console.error('Error generating or sharing receipt:', error);
-      Alert.alert('Receipt Error', 'Failed to generate or share receipt.');
+      console.error('Error generating or sharing PDF:', error);
+      Alert.alert('Error', `Failed to generate receipt: ${error.message}`);
     }
   };
 
@@ -3804,9 +3868,9 @@ export default function CollectorPayment() {
       {/* Paystack WebView Modal */}
       {showPaystack && currentPaymentData && (
         <Paystack
-          paystackKey={PAYSTACK_PUBLIC_KEY}
+          // paystackKey={PAYSTACK_PUBLIC_KEY} // This line is now commented out
           amount={currentPaymentData.amount} // Amount in KES, Paystack WebView handles conversion if needed based on currency
-          billingEmail={currentPaymentData.customerEmail}
+          billingEmail={currentPaymentData.customerEmail} // Will use the placeholder email
           billingMobile={currentPaymentData.customerPhone.replace('+', '')} // Remove '+' for billingMobile
           activityIndicatorColor={Colors.primary}
           onCancel={handlePaystackCancel}
