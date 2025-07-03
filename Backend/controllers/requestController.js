@@ -777,7 +777,7 @@ const createRequest = async (req, res) => {
     // SMS Notification for Center Admin
     // Assuming center.phoneNo is like 722920813
     const centerPhoneNumber = formatPhoneNumber(center.phoneNo);
-    const adminMessage = `Hello,New scrap request from ${user.username} (Phone: ${user.phoneNo}) for ${scrapType} in ${location}. Please check your ScrapConnect dashboard.`;
+    const adminMessage = `Hello Admin,New scrap request from ${user.username} (Phone: ${user.phoneNo}) for ${scrapType} in ${location}. Please check your ScrapConnect account.`;
     await sendSMS(centerPhoneNumber, adminMessage);
 
     res.status(201).json({

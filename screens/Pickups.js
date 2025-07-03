@@ -329,7 +329,7 @@ const Pickups = () => {
     }
 
     // --- CORRECTED URL TO MATCH BACKEND ROUTER.JS ---
-    const url = `http://192.168.1.5:5000/api/v1/requests/collector/${id}/list/`;
+    const url = `http://192.168.189.119:5000/api/v1/requests/collector/${id}/list/`;
     console.log('Attempting to fetch from URL:', url); // Log the exact URL being requested
 
     try {
@@ -354,7 +354,7 @@ const Pickups = () => {
       // --- CORRECTED URL AND METHOD TO MATCH BACKEND ROUTER.JS ---
       // Using POST as per router.post('/requests/:requestId/update/', updateRequestStatus);
       await axios.post(
-        `http://192.168.1.5:5000/api/v1/requests/${requestId}/update/`,
+        `http://192.168.189.119:5000/api/v1/requests/${requestId}/update/`,
         { status: 'collected' } // Send the new status in the request body
       );
       console.log(`Request ${requestId} marked as collected.`);

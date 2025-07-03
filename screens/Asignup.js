@@ -310,7 +310,7 @@
 //     }
 
 //     try {
-//       const response = await axios.post('http://    192.168.1.5:5000/api/v1/center/signup/', {
+//       const response = await axios.post('http://    192.168.189.119:5000/api/v1/center/signup/', {
 //         centerUsername: username,
 //         email,
 //         phoneNo: phone,
@@ -540,7 +540,7 @@ export default function AdminSignUp({ navigation }) {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.5:5000/api/v1/center/signup/", // Correct API endpoint for Center Signup
+        "http://192.168.189.119:5000/api/v1/center/signup/", // Correct API endpoint for Center Signup
         {
           centerName: centerName.trim(), // Map fullName to centerName
           centerUsername: centerUsername.trim().toLowerCase(), // Map new state to centerUsername

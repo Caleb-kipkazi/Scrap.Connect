@@ -203,14 +203,11 @@ const Payment = require("../models/paymentModel");
 const AfricasTalking = require("africastalking");
 const Collector = require("../models/collector");
 
+// Initialize Africa's Talking SDK once globally
 const at = AfricasTalking({
   username: process.env.AT_USERNAME,
   apiKey: process.env.AT_API_KEY,
 });
-
-const AF_TALKING_USERNAME = process.env.AT_USERNAME;
-const AF_TALKING_API_KEY = process.env.AT_API_KEY;
-const AF_TALKING_BASE_URL = 'https://api.sandbox.africastalking.com/version1/';
 
 const payHomeowner = async (req, res) => {
   let airtimeResponseDetail = null; // Initialize to null
@@ -232,65 +229,46 @@ const payHomeowner = async (req, res) => {
       return res.status(400).json({ error: 'Invalid amount provided. Must be a positive number.' });
     }
 
-    const formattedAmount = `KES ${parsedAmount.toFixed(2)}`;
+    // The currency code should be extracted or assumed (e.g., 'KES')
+    // and the numeric amount should be used for the SDK.
+    const currencyCode = 'KES'; // Assuming KES as the currency based on previous 'KES 50.00' format
 
     let phoneNumber = rawPhoneNumber;
     if (phoneNumber.startsWith('0')) {
-        phoneNumber = `+254${phoneNumber.substring(1)}`;
+      phoneNumber = `+254${phoneNumber.substring(1)}`;
     } else if (phoneNumber.startsWith('254') && !phoneNumber.startsWith('+254')) {
-        phoneNumber = `+${phoneNumber}`;
+      phoneNumber = `+${phoneNumber}`;
     }
 
-    const africaTalkingPayload = {
-      username: AF_TALKING_USERNAME,
-      recipients: [
-        {
-          phoneNumber: phoneNumber,
-          amount: formattedAmount,
-        },
-      ],
-    };
-
-    console.log("Backend sending direct request to Africa's Talking with payload:", africaTalkingPayload);
-
-    const response = await axios.post(
-      `${AF_TALKING_BASE_URL}airtime/send`,
-      africaTalkingPayload,
+    // Prepare recipients array for Africa's Talking SDK with separate currencyCode and amount
+    const recipients = [
       {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          apiKey: AF_TALKING_API_KEY,
-        },
-      }
-    );
+        phoneNumber: phoneNumber,
+        currencyCode: currencyCode, // Added currencyCode
+        amount: parsedAmount,      // Changed to the parsed numeric amount
+      },
+    ];
 
-    console.log('✅ Payment sent successfully via Africa\'s Talking:', response.data);
+    console.log("Backend sending request to Africa's Talking via SDK with recipients:", recipients);
 
-    const airtimeResult = response.data;
+    const response = await at.AIRTIME.send({
+      recipients: recipients,
+    });
+
+    console.log('✅ Payment sent successfully via Africa\'s Talking SDK:', response);
+
+    const airtimeResult = response;
     airtimeResponseDetail = airtimeResult.responses && airtimeResult.responses.length > 0
-                                  ? airtimeResult.responses[0]
-                                  : null;
+      ? airtimeResult.responses[0]
+      : null;
 
-    // --- MODIFICATION START ---
-    // Extract status and transactionId directly from the AT response detail
-    // and set defaults if detail is not available or status is unexpected.
     if (airtimeResponseDetail) {
       paymentStatusToSave = airtimeResponseDetail.status;
       transactionIdToSave = airtimeResponseDetail.requestId;
     } else {
-      // If no response detail, it's an AT error or malformed response
       paymentStatusToSave = 'AT_ERROR_NO_DETAIL';
       transactionIdToSave = 'AT_NO_REQUEST_ID';
     }
-
-    // You specifically asked to always treat it as 'success' for recording purposes.
-    // However, it's safer to record the actual status from AT, and then if you need
-    // to display "success" to the lecturer, you do that on the front-end or in reports.
-    // For now, we will save the actual status from AT (`paymentStatusToSave`).
-    // If you absolutely need the `status` field in the DB to always be 'Success' for any AT response:
-    // paymentStatusToSave = 'Success'; // Uncomment THIS line if you must force 'Success' in DB
-    // --- MODIFICATION END ---
 
     const payment = new Payment({
       requestId,
@@ -299,42 +277,41 @@ const payHomeowner = async (req, res) => {
       amount: parsedAmount,
       phoneNumber,
       transactionId: transactionIdToSave,
-      status: paymentStatusToSave, // This will now store whatever AT returns (e.g., 'Sent', 'Success', 'Failed')
+      status: paymentStatusToSave,
       paidAt: new Date()
     });
     await payment.save();
 
-    // Respond with success if payment was recorded, regardless of AT 'Sent'/'Success' distinction
     res.status(200).json({
-      message: 'Payment processed and recorded!', // General success message
-      data: response.data, // Still provide the full AT response for debugging
+      message: 'Payment processed and recorded!',
+      data: response,
       paymentRecord: payment,
     });
 
   } catch (error) {
-    // This catch block handles network errors or errors before AT API call
-    console.error('❌ Payment processing error (before DB save or AT API):', error.response?.data || error.message);
+    console.error('❌ Payment processing error (before DB save or AT SDK):', error.message);
+    if (error.response) {
+      console.error('Africa\'s Talking API error response data:', error.response.data);
+    }
 
-    // Attempt to save a "Failed" payment record if possible, using whatever info we have
-    // This is optional but can help track all payment attempts
     const failedPayment = new Payment({
       requestId: req.body.requestId || 'UNKNOWN',
       collectorId: req.body.collectorId || req.user?.collectorId || 'UNKNOWN',
       homeownerId: req.body.homeownerId?._id || 'UNKNOWN',
       amount: parseFloat(req.body.amount) || 0,
       phoneNumber: req.body.phoneNumber || 'UNKNOWN',
-      transactionId: transactionIdToSave, // Will be 'N/A' or partial if error before AT response
-      status: 'Failed_Backend_Error', // Specific status for internal errors
+      transactionId: transactionIdToSave,
+      status: 'Failed_Backend_Error',
       paidAt: new Date()
     });
     try {
-        await failedPayment.save();
-        console.log("Failed payment attempt recorded in DB.");
+      await failedPayment.save();
+      console.log("Failed payment attempt recorded in DB.");
     } catch (dbError) {
-        console.error("Error saving failed payment attempt:", dbError);
+      console.error("Error saving failed payment attempt:", dbError);
     }
 
-    res.status(500).json({ // Use 500 for server-side processing errors
+    res.status(500).json({
       error: 'Payment processing failed due to an internal server error or network issue.',
       detail: error.response?.data ? JSON.stringify(error.response.data) : error.message,
     });
@@ -357,25 +334,24 @@ async function getPaymentsByCollector(req, res) {
 }
 
 async function getPaymentsByHomeowner(req, res) {
-    try {
-        const homeownerId = req.params.homeownerId;
-        const payments = await Payment.find({ homeownerId: homeownerId })
-                                   .populate('requestId', 'scrapType weight')
-                                   .populate('collectorId', 'fullName')
-                                   .sort({ paidAt: -1 });
-        res.status(200).json({
-            message: "Homeowner payments fetched successfully!",
-            payments: payments,
-            success: true
-        });
-    } catch (error) {
-        console.error("Error fetching homeowner payments:", error);
-        res.status(500).json({ message: "Failed to fetch payments", error: error.message });
-    }
+  try {
+    const homeownerId = req.params.homeownerId;
+    const payments = await Payment.find({ homeownerId: homeownerId })
+      .populate('requestId', 'scrapType weight')
+      .populate('collectorId', 'fullName')
+      .sort({ paidAt: -1 });
+    res.status(200).json({
+      message: "Homeowner payments fetched successfully!",
+      payments: payments,
+      success: true
+    });
+  } catch (error) {
+    console.error("Error fetching homeowner payments:", error);
+    res.status(500).json({ message: "Failed to fetch payments", error: error.message });
+  }
 }
-  
 
-// Record collector's Paystack payment (MPESA)
+
 const recordCollectorPaymentViaPaystack = async (req, res) => {
   try {
     const { requestId, collectorId, phoneNo, amount, reference } = req.body;

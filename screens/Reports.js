@@ -80,7 +80,7 @@
 //       console.log('🎫 Token found, making API call...');
 
 //       // Make API call to backend for center summary report
-//       const response = await fetch('http://192.168.1.5:5000/api/v1/report/center/summary', {
+//       const response = await fetch('http://192.168.189.119:5000/api/v1/report/center/summary', {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Bearer ${token}`, // Use the generic 'token'
@@ -430,7 +430,7 @@
 //       console.log('🎫 Admin token found, making API call...');
 
 //       // Make API call to backend
-//       const response = await fetch('http://192.168.1.5:5000/api/v1/report/center/summary', {
+//       const response = await fetch('http://192.168.189.119:5000/api/v1/report/center/summary', {
 //         method: 'GET',
 //         headers: {
 //           'Authorization': `Bearer ${adminToken}`,
@@ -773,7 +773,7 @@ export default function Reports() {
         return;
       }
 
-      const response = await fetch('http://192.168.1.5:5000/api/v1/report/center/summary', {
+      const response = await fetch('http://192.168.189.119:5000/api/v1/report/center/summary', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${adminToken}`,

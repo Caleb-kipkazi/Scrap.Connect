@@ -198,7 +198,7 @@
 // //   const handleLogin = async () => {
 // //     try {
 // //       const response = await axios.post(
-// //         "http://   192.168.1.5:5000/api/v1/center/signin/",
+// //         "http://   192.168.189.119:5000/api/v1/center/signin/",
 // //         {
 // //           username: email.trim().toLowerCase(), // assuming email is used as username
 // //           password,
@@ -400,7 +400,7 @@
 // //     try {
 // //       // Connect to the centerSignin endpoint assuming Admin is a Center Admin
 // //       const response = await axios.post(
-// //         "http://192.168.1.5:5000/api/v1/center/signin/", // Endpoint for centerSignin
+// //         "http://192.168.189.119:5000/api/v1/center/signin/", // Endpoint for centerSignin
 // //         {
 // //           centerUsername: centerName.trim().toLowerCase(), // Trim and lowercase username
 // //           password,
@@ -604,7 +604,7 @@
 
 //         try {
 //             const response = await axios.post(
-//                 "http://192.168.1.5:5000/api/v1/center/signin/",
+//                 "http://192.168.189.119:5000/api/v1/center/signin/",
 //                 {
 //                     centerUsername: centerName.trim().toLowerCase(),
 //                     password,
@@ -807,7 +807,7 @@ export default function AdminLogin({ navigation }) {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.5:5000/api/v1/center/signin/",
+        "http://192.168.189.119:5000/api/v1/center/signin/",
         {
           email: email.trim().toLowerCase(),
           password,

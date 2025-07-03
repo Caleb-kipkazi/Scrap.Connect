@@ -25,7 +25,7 @@ const Collectors = () => {
       const token = await AsyncStorage.getItem('token');
       const centerId = await AsyncStorage.getItem('centerId');
       const response = await axios.get(
-        `http://192.168.1.5:5000/api/v1/center/collectors/${centerId}`,
+        `http://192.168.189.119:5000/api/v1/center/collectors/${centerId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

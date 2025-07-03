@@ -36,7 +36,7 @@ const AdminFeedbackScreen = () => {
       setLoading(true);
       setError(null); // Clear previous errors
       console.log(`Fetching feedbacks for center ID: ${id}`);
-      const response = await axios.get(`http://192.168.1.5:5000/api/v1/feedback/center/${id}`);
+      const response = await axios.get(`http://192.168.189.119:5000/api/v1/feedback/center/${id}`);
       console.log('Feedback API Response:', response.data);
       if (response.data && Array.isArray(response.data.feedbacks)) {
         setFeedbacks(response.data.feedbacks);
